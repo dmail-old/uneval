@@ -1,0 +1,17 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"command": "npm",
+			"args": ["run", "compile"],
+			"type": "process",
+			"taskName": "compile",
+			"group": "build",
+			// "isBackground": false, watch tasks will be a background task
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared"
+			}
+		}
+	]
+}
