@@ -50,7 +50,7 @@
 		"test-cover-clean": "rimraf .nyc_output && rimraf coverage && rimraf coverage.lcov",
 		"test-cover-html": "nyc report --reporter=lcov",
 		"test-cover-lcov": "nyc report --reporter=text-lcov > coverage.lcov",
-		"test-cover-upload": "npm run test-cover-lcov && codecov --token=CHANGE_ME",
+		"test-cover-upload": "npm run test-cover-lcov && codecov --token=7e0621a2-dbc9-485d-a150-3870d30ba3ae",
 		"repo-reset": "npm run code-clean && npm run test-cover-clean && rimraf node_modules",
 		"repo-reinstall": "npm run repo-reset && npm install",
 		"build": "npm run code-compile",
