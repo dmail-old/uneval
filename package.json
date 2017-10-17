@@ -1,7 +1,7 @@
 {
 	"name": "@dmail/uneval",
 	"version": "0.0.1",
-	"licence": "MIT",
+	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/dmail/uneval"
@@ -53,9 +53,9 @@
 		"test-cover-upload": "npm run test-cover-lcov && codecov --token=7e0621a2-dbc9-485d-a150-3870d30ba3ae",
 		"repo-reset": "npm run code-clean && npm run test-cover-clean && rimraf node_modules",
 		"repo-reinstall": "npm run repo-reset && npm install",
-		"build": "npm run code-compile",
+		"build": "npm run code-build",
 		"compile": "npm run code-compile",
-		"prepublishOnly": "npm run code-compile",
+		"prepublishOnly": "npm run code-build",
 		"reinstall": "npm run repo-reinstall"
 	}
 }
