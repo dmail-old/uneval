@@ -1,6 +1,6 @@
 {
 	"name": "@dmail/uneval",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
@@ -23,6 +23,7 @@
 		"@dmail/command": "0.1.1",
 		"@dmail/prettiest": "0.2.1",
 		"@dmail/shared-config": "1.1.1",
+		"@dmail/test-cheap": "0.0.2",
 		"babel-cli": "7.0.0-beta.0",
 		"babel-core": "7.0.0-beta.0",
 		"babel-eslint": "8.0.0",
