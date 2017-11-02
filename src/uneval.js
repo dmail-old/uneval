@@ -205,7 +205,7 @@ export const uneval = (
 	options = {
 		parenthesis: false,
 		new: false,
-		skipFunctionBody: false,
+		skipFunctionBody: true,
 		pretty: true
 	}
 ) => {

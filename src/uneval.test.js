@@ -23,8 +23,8 @@ const expectUnevalWithParenthesis = (value, expectedUneval) =>
 	assert.equal(uneval(value, { parenthesis: true }), expectedUneval)
 const expectUnevalWithNewAndParenthesis = (value, expectedUneval) =>
 	assert.equal(uneval(value, { parenthesis: true, new: true }), expectedUneval)
-const expectUnevalWithoutFunctionBody = (value, expectedUneval) =>
-	assert.equal(uneval(value, { skipFunctionBody: true }), expectedUneval)
+const expectUnevalWithFunctionBody = (value, expectedUneval) =>
+	assert.equal(uneval(value, { skipFunctionBody: false }), expectedUneval)
 
 /* eslint-disable no-new-wrappers, no-new-object, no-array-constructor */
 
@@ -38,18 +38,19 @@ ensure("boolean uneval", () => {
 })
 
 ensure("arrow function", () => {
+	expectUneval(() => {}, `function`)
+	const named = () => {}
+	expectUneval(named, `function named`)
+	expectUnevalWithFunctionBody(named, `function named() {}`)
+
 	// because of babel most function body are converted back to regular function
-	expectUneval(() => {}, "function () {}")
-	expectUneval(
+	expectUnevalWithFunctionBody(() => {}, "function () {}")
+	expectUnevalWithFunctionBody(
 		() => true,
 		`function () {
     return true;
   }`
 	)
-	expectUnevalWithoutFunctionBody(() => {}, `function`)
-	const named = () => {}
-	expectUneval(named, `function named() {}`)
-	expectUnevalWithoutFunctionBody(named, `function named`)
 })
 
 ensure("function", () => {

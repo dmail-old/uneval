@@ -20,6 +20,7 @@
 				"NODE_PATH": "${workspaceRoot}/dist"
 			},
 			"sourceMaps": true,
+			"outputCapture": "std",
 			"skipFiles": ["node_modules/**"]
 		},
 		{
