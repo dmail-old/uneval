@@ -2,7 +2,7 @@
 
 // https://github.com/joliss/js-string-escape/blob/master/index.js
 // http://javascript.crockford.com/remedial.html
-const quote = value => {
+const quote = (value) => {
 	const string = String(value)
 	let i = 0
 	const j = string.length
@@ -29,7 +29,7 @@ const quote = value => {
 	return escapedString
 }
 
-const getPrimitiveType = value => {
+const getPrimitiveType = (value) => {
 	if (value === null) {
 		return "null"
 	}
@@ -57,7 +57,7 @@ const getCompositeType = object => {
 const hasOwnProperty = Object.prototype.hasOwnProperty
 function getPropertyNames(value) {
 	const names = []
-	for (let name in value) {
+  for (const name in value) {
 		if (hasOwnProperty.call(value, name)) {
 			names.push(name)
 		}
@@ -65,13 +65,13 @@ function getPropertyNames(value) {
 	return names
 }
 
-const newLineAndIndentation = indent => "\n" + "\t".repeat(indent) // eslint-disable-line prefer-template
+const newLineAndIndentation = (indent) => "\n" + "\t".repeat(indent) // eslint-disable-line prefer-template
 
 const primitiveSources = {}
 const compositeSources = {}
 
 Object.assign(primitiveSources, {
-	boolean: boolean => boolean.toString(),
+  boolean: (boolean) => boolean.toString(),
 	function: (fn, { format, skipFunctionBody }) => {
 		if (skipFunctionBody) {
 			return fn.name ? `function ${fn.name}` : "function"
@@ -79,11 +79,11 @@ Object.assign(primitiveSources, {
 		return format(fn.toString())
 	},
 	null: () => "null",
-	number: number => number.toString(),
+  number: (number) => number.toString(),
 	object: (object, { unevalComposite }) => unevalComposite(getCompositeType(object), object),
-	string: string => `"${quote(string)}"`,
+  string: (string) => `"${quote(string)}"`,
 	symbol: (symbol, { format }) => format("symbol"),
-	undefined: () => "undefined"
+  undefined: () => "undefined",
 })
 const unevalInstance = (instance, { type, uneval, format }) =>
 	format(`${type}(${uneval(instance.valueOf())})`)
@@ -123,7 +123,7 @@ Object.assign(compositeSources, {
 		if (valuesSource.length) {
 			if (pretty) {
 				arraySource = `[${newLineAndIndentation(depth)}${valuesSource}${newLineAndIndentation(
-					depth - 1
+          depth - 1,
 				)}]`
 			} else {
 				arraySource = `[${valuesSource}]`
@@ -138,7 +138,7 @@ Object.assign(compositeSources, {
 	Date: unevalInstance,
 	Error: (error, { expose }) => unevalInstance(error.message, expose({ type: error.name })),
 	Number: unevalInstance,
-	RegExp: regexp => regexp.toString(),
+  RegExp: (regexp) => regexp.toString(),
 	Object: (object, { seen, depth, uneval, format, pretty }) => {
 		if (seen) {
 			if (seen.indexOf(object) > -1) {
@@ -165,7 +165,7 @@ Object.assign(compositeSources, {
 					propertiesSource += `${propertyNameSource}: ${propertyValueSource}`
 				} else {
 					propertiesSource += `,${newLineAndIndentation(
-						depth
+            depth,
 					)}${propertyNameSource}: ${propertyValueSource}`
 				}
 			} else if (i === 0) {
@@ -181,7 +181,7 @@ Object.assign(compositeSources, {
 		if (propertiesSource.length) {
 			if (pretty) {
 				objectSource = `{${newLineAndIndentation(depth)}${propertiesSource}${newLineAndIndentation(
-					depth - 1
+          depth - 1,
 				)}}`
 			} else {
 				objectSource = `{ ${propertiesSource} }`
@@ -197,7 +197,7 @@ Object.assign(compositeSources, {
 	// ici faudrais désactiver les parenthèses jusque pour l'object qu'on uneval
 	// mais préserver la valeur par défaut pour ceux qui sont nested
 	Other: (object, { type, format, unevalComposite }) =>
-		format(`${type}(${unevalComposite("Object", object)})`)
+    format(`${type}(${unevalComposite("Object", object)})`),
 })
 
 export const uneval = (
@@ -206,14 +206,14 @@ export const uneval = (
 		parenthesis: false,
 		new: false,
 		skipFunctionBody: true,
-		pretty: true
-	}
+    pretty: true,
+  },
 ) => {
 	const expose = (...properties) => Object.assign({}, options, ...properties)
 
 	const localUneval = (value, localOptions = {}) => uneval(value, expose(localOptions))
 
-	const format = string => {
+  const format = (string) => {
 		let formattedString = string
 		if (options.parenthesis) {
 			formattedString = `(${string})`
@@ -234,7 +234,7 @@ export const uneval = (
 		uneval: localUneval,
 		format,
 		unevalPrimitive,
-		unevalComposite
+    unevalComposite,
 	})
 
 	return unevalPrimitive(getPrimitiveType(value), value)

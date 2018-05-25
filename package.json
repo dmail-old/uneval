@@ -13,7 +13,8 @@
 	"module": "index.js",
 	"files": [
 		"dist",
-		"src"
+		"src",
+		"index.js"
 	],
 	"engines": {
 		"node": ">=8.6.0"
@@ -22,9 +23,9 @@
 	"devDependencies": {
 		"@dmail/command": "0.1.1",
 		"@dmail/prettiest": "0.2.1",
-		"@dmail/shared-config": "1.1.1",
-		"@dmail/test-cheap": "0.0.2",
-		"babel-cli": "7.0.0-beta.0",
+		"@dmail/shared-config": "5.0.0",
+		"@dmail/test-cheap": "0.2.0",
+		"babel-cli": "6.26.0",
 		"babel-core": "7.0.0-beta.0",
 		"babel-eslint": "8.0.0",
 		"babel-preset-env": "2.0.0-beta.0",
@@ -32,7 +33,7 @@
 		"eslint": "3.19.0",
 		"eslint-plugin-import": "2.6.0",
 		"nyc": "11.2.1",
-		"prettier": "1.7.0",
+		"prettier": "1.9.1",
 		"rimraf": "2.6.2"
 	},
 	"scripts": {
@@ -42,9 +43,9 @@
 		"code-watch": "babel . --watch --out-dir dist --ignore=node_modules,dist --source-maps",
 		"code-lint": "eslint .",
 		"code-format": "prettiest",
-		"test-list": "test-list",
 		"code-list": "prettiest-list",
-		"test-before": "npm run code-lint && npm run code-format && npm run code-compile",
+		"test-before": "npm run code-clean && npm run code-lint && npm run code-format && npm run code-compile",
+		"test-list": "test-list",
 		"test-run": "test-run",
 		"test": "npm run test-before && npm run test-run",
 		"test-cover": "npm run test-before && nyc npm run test-run",
@@ -53,6 +54,7 @@
 		"test-cover-text": "nyc report --reporter=text-summary",
 		"test-cover-table": "nyc report --reporter=text",
 		"test-cover-lcov": "nyc report --reporter=text-lcov > coverage.lcov",
+		"test-cover-upload": "codecov --token=7e0621a2-dbc9-485d-a150-3870d30ba3ae",
 		"repo-reset": "npm run code-clean && npm run test-cover-clean && rimraf node_modules",
 		"repo-reinstall": "npm run repo-reset && npm install",
 		"build": "npm run code-build",
