@@ -32,10 +32,22 @@ test("uneval.js", ({ ensure }) => {
   })
 
   ensure("arrow function", () => {
-    expectUneval(() => {}, `function`)
-    const named = () => {}
-    expectUneval(named, `function named`)
-    expectUnevalWithFunctionBody(named, `function named() {}`)
+    expectUneval(() => {}, `function () {/* hidden */}`)
+    const named = (a) => {
+      return a
+    }
+    expectUneval(named, `function named() {/* hidden */}`)
+    expectUnevalWithFunctionBody(named, named.toString())
+
+    const nested = {
+      function: () => {},
+    }
+    assert.equal(
+      uneval(nested),
+      `{
+  "function": function () {/* hidden */}
+}`,
+    )
 
     // because of babel most function body are converted back to regular function
     expectUnevalWithFunctionBody(() => {}, "function () {}")
@@ -68,6 +80,21 @@ test("uneval.js", ({ ensure }) => {
     const emptyObject = {}
     expectUneval(emptyObject, "{}")
     expectUneval(new Object({}), "{}")
+    assert.equal(uneval({}, { objectConstructor: true }), "Object({})")
+    assert.equal(
+      uneval({ foo: true }, { objectConstructor: true, useNew: true, compact: true }),
+      `new Object({"foo": true})`,
+    )
+
+    assert.equal(
+      uneval({ foo: true, nested: { bar: true } }, { parenthesis: true }),
+      `({
+  "foo": true,
+  "nested": ({
+    "bar": true
+  })
+})`,
+    )
 
     const foo = { foo: true, bar: false }
     expectUneval(
@@ -140,7 +167,9 @@ test("uneval.js", ({ ensure }) => {
   })
 
   ensure("symbol/Symbol", () => {
-    expectUneval(Symbol(), "Symbol")
+    expectUneval(Symbol(), "Symbol()")
+    expectUneval(Symbol("foo"), `Symbol("foo")`)
+    expectUneval(Symbol(42), `Symbol("42")`)
   })
 
   ensure("undefined", () => {
@@ -205,7 +234,7 @@ test("uneval.js", ({ ensure }) => {
     expectUneval(
       [Symbol()],
       `[
-  Symbol
+  Symbol()
 ]`,
     )
   })

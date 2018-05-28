@@ -47,12 +47,7 @@ export const unevalArray = (value, options = {}) => {
     arraySource = ""
   }
 
-  const { arrayConstructor } = options
-  if (arrayConstructor) {
-    arraySource = `Array(${arraySource})`
-  } else {
-    arraySource = `[${arraySource}]`
-  }
+  arraySource = `[${arraySource}]`
 
   return unevalConstructor(arraySource, options)
 }

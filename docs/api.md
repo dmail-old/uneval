@@ -2,29 +2,38 @@
 
 * [parenthesis](#parenthesis)
 * [useNew](#usenew)
-* [arrayConstructor](#arrayconstructor)
 * [objectConstructor](#objectconstructor)
 * [compact](#compact)
 * [showFunctionBody](#showfunctionbody)
 * [indentUsingTab](#indentusingtab)
 * [indentSize](#indentsize)
+* [constructor conversion](#constructor-conversion)
+* [class conversion](#class-conversion)
 
 ## parenthesis
 
 ```javascript
 import { uneval } from "@dmail/uneval"
 
-uneval({ foo: true })
+const value = { foo: true, nested: { bar: true } }
+
+uneval(value)
 /*
 {
-  foo: true
+  "foo": true,
+  "nested": {
+    "bar": true
+  }
 }
 */
 
-uneval({ foo: true }, { parenthesis: true })
+uneval(value, { parenthesis: true })
 /*
 ({
-  foo: true
+  "foo": true,
+  "nested": ({
+    "bar": true
+  })
 })
 */
 ```
@@ -45,36 +54,33 @@ new Date(10)
 */
 ```
 
-## arrayConstructor
-
-```javascript
-import { uneval } from "@dmail/uneval"
-
-uneval([])
-/*
-[]
-*/
-
-uneval([], { arrayConstructor: true })
-/*
-new Array()
-*/
-```
-
 ## objectConstructor
 
 ```javascript
 import { uneval } from "@dmail/uneval"
 
-uneval({})
+const value = {}
+
+uneval(value)
 /*
 {}
 */
 
-uneval({}, { objectConstructor: true })
+uneval(value, { objectConstructor: true })
 /*
-new Object()
+Object({})
 */
+```
+
+### Why there is no arrayConstructor option ?
+
+Because `new Array()` is not equivalent to `[]` as shown below
+
+```javascript
+const array = eval(`new Array(10)`)
+
+array[0] // undefined
+array.length // 10
 ```
 
 ## compact
@@ -82,16 +88,21 @@ new Object()
 ```javascript
 import { uneval } from "@dmail/uneval"
 
-uneval({ foo: true })
+const value = { foo: true, nested: { bar: true } }
+
+uneval(value)
 /*
 {
-  foo: true
+  foo: true,
+  nested: {
+    bar: true
+  }
 }
 */
 
-uneval({ foo: true }, { compact: true })
+uneval(value, { compact: true })
 /*
-{foo: true}
+{foo: true, nested: {bar: true}}
 */
 ```
 
@@ -102,12 +113,12 @@ import { uneval } from "@dmail/uneval"
 
 const fn = () => 10
 
-uneval(() => 10)
+uneval(fn)
 /*
 function fn
 */
 
-uneval(() => 10, { showFunctionBody: true })
+uneval(fn, { showFunctionBody: true })
 /*
 () => 10
 */
@@ -118,14 +129,16 @@ uneval(() => 10, { showFunctionBody: true })
 ```javascript
 import { uneval } from "@dmail/uneval"
 
-uneval({ foo: true })
+const value = { foo: true }
+
+uneval(value)
 /*
 {
   foo: true
 }
 */
 
-uneval({ foo: true }, { indentUsingTabs: true })
+uneval(value, { indentUsingTabs: true })
 /*
 {
   foo: true
@@ -140,17 +153,63 @@ In the second call to uneval foo is indented using tabs, not space
 ```javascript
 import { uneval } from "@dmail/uneval"
 
-uneval({ foo: true })
+const value = { foo: true, nested: { bar: true } }
+
+uneval(value)
 /*
 {
-  foo: true
+  foo: true,
+  nested: {
+    bar: true
+  }
 }
 */
 
-uneval({ foo: true }, { indentSize: 4 })
+uneval(value, { indentSize: 4 })
 /*
 {
-    foo: true
+    foo: true,
+    nested: {
+        bar: true
+    }
 }
+*/
+```
+
+## Constructor conversion
+
+```javascript
+import { uneval } from "@dmail/uneval"
+
+const UserConstructor = function() {
+  this.name = "dam"
+}
+UserConstructor.prototype.age = 10
+
+uneval(new UserConstructor())
+/*
+UserConstructor({
+  "name": "dam"
+})
+*/
+```
+
+## Class conversion
+
+```javascript
+import { uneval } from "@dmail/uneval"
+
+class UserClass {
+  constructor() {
+    this.name = ""
+  }
+}
+UserClass.prototype.age = 10
+
+uneval(new UserClass())
+/*
+UserClass({
+  "name": "dam"
+})
 */
 ```

@@ -57,7 +57,7 @@ export const unevalObject = (value, options = {}) => {
 
   const { objectConstructor } = options
   if (objectConstructor) {
-    objectSource = `Object(${objectSource})`
+    objectSource = `Object({${objectSource}})`
   } else {
     objectSource = `{${objectSource}}`
   }

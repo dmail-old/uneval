@@ -4,7 +4,7 @@
 [![build](https://travis-ci.org/dmail/uneval.svg?branch=master)](http://travis-ci.org/dmail/uneval)
 [![codecov](https://codecov.io/gh/dmail/uneval/branch/master/graph/badge.svg)](https://codecov.io/gh/dmail/uneval)
 
-> Turn JavaScript values into source strings
+> Convert a value into a source string
 
 ## Installing / Getting started
 
@@ -17,10 +17,17 @@ import { uneval } from "@dmail/uneval"
 
 console.log(
   uneval({
-    string: "dmail",
+    array: [],
+    boolean: true,
+    date: new Date(7),
+    function: (a) => a,
+    null: null,
     number: 10,
-    date: new Date(),
     regExp: /ok/,
+    string: "dmail",
+    symbol: Symbol("foo"),
+    typeError: new TypeError("cannot read property 0 of undefined"),
+    undefined: undefined,
   }),
 )
 ```
@@ -29,10 +36,17 @@ Executing above code logs in the console
 
 ```javascript
 {
-  "string": "dmail",
+  "array": [],
+  "boolean": true,
+  "date": Date(7),
+  "function": () => {/* hidden */},
+  "null": null,
   "number": 10,
-  "date": Date(1527257307798),
   "regExp": /ok/
+  "string": "dmail",
+  "symbol": Symbol("foo"),
+  "typeError": TypeError('cannot ready property 0 of undefined'),
+  "undefined": undefined,
 }
 ```
 
