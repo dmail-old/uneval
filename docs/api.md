@@ -115,7 +115,7 @@ const fn = () => 10
 
 uneval(fn)
 /*
-function fn
+() => {/* hidden */}
 */
 
 uneval(fn, { showFunctionBody: true })
@@ -175,6 +175,8 @@ uneval(value, { indentSize: 4 })
 }
 */
 ```
+
+indentSize does nothing when indentUsingTab is true
 
 ## Constructor conversion
 
