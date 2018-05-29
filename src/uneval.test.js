@@ -208,6 +208,8 @@ test("uneval.js", ({ ensure }) => {
     const emptyArray = []
     expectUneval(emptyArray, `[]`)
 
+    assert.equal(uneval(Array(3), { compact: true }), `[,,]`)
+
     const newArray = new Array("foo", 1)
     expectUneval(
       newArray,

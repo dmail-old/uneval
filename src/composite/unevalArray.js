@@ -21,12 +21,14 @@ export const unevalArray = (value, options = {}) => {
   }
 
   while (i < j) {
-    const valueSource = unevalPrimitive(value[i], nestedOptions)
+    const valueSource = value.hasOwnProperty(i) ? unevalPrimitive(value[i], nestedOptions) : ""
     if (compact) {
       if (i === 0) {
         valuesSource += valueSource
-      } else {
+      } else if (valueSource) {
         valuesSource += `, ${valueSource}`
+      } else {
+        valuesSource += `,`
       }
     } else if (i === 0) {
       valuesSource += valueSource
