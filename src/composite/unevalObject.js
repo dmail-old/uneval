@@ -23,7 +23,11 @@ export const unevalObject = (value, options = {}) => {
 
   while (i < j) {
     const propertyName = propertyNames[i]
-    const propertyNameSource = unevalPrimitive(propertyName, nestedOptions)
+    const propertyNameAsNumber = parseInt(propertyName, 10)
+    const propertyNameSource = unevalPrimitive(
+      Number.isInteger(propertyNameAsNumber) ? propertyNameAsNumber : propertyName,
+      nestedOptions,
+    )
     const propertyValueSource = unevalPrimitive(value[propertyName], nestedOptions)
 
     if (compact) {

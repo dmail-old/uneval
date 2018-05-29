@@ -21,9 +21,14 @@ const unevalFunction = (value, { showFunctionBody, parenthesis, depth }) => {
 
 const unevalNull = () => "null"
 
-const unevalNumber = (value) => value.toString()
+const unevalNumber = (value) => {
+  return Object.is(value, -0) ? "-0" : value.toString()
+}
 
-const unevalString = (value) => `"${quote(value)}"`
+const unevalString = (value, { singleQuote }) => {
+  const quotedValue = quote(value)
+  return singleQuote ? `'${quotedValue}'` : `"${quotedValue}"`
+}
 
 const unevalSymbol = (value, options) => {
   const toStringResult = value.toString()
@@ -70,6 +75,7 @@ export const unevalPrimitive = (
   value,
   {
     parenthesis = false,
+    singleQuote = false,
     useNew = false,
     objectConstructor = false,
     compact = false,
@@ -83,6 +89,7 @@ export const unevalPrimitive = (
   const type = getPrimitiveType(value)
   return mappings[type](value, {
     parenthesis,
+    singleQuote,
     useNew,
     objectConstructor,
     compact,

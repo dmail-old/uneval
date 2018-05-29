@@ -70,6 +70,8 @@ test("uneval.js", ({ ensure }) => {
   ensure("number/Number", () => {
     expectUneval(0, "0")
     expectUneval(1, "1")
+    expectUneval(-0, "-0")
+    expectUneval(Infinity, "Infinity")
     expectUneval(new Number(0), "Number(0)")
     expectUnevalWithParenthesis(new Number(0), "(Number(0))")
     expectUnevalWithNew(new Number(0), "new Number(0)")
@@ -85,6 +87,9 @@ test("uneval.js", ({ ensure }) => {
       uneval({ foo: true }, { objectConstructor: true, useNew: true, compact: true }),
       `new Object({"foo": true})`,
     )
+
+    assert.equal(uneval({ 0: "foo" }, { compact: true }), `{0: "foo"}`)
+    assert.equal(uneval({ Infinity: "foo" }, { compact: true }), `{"Infinity": "foo"}`)
 
     assert.equal(
       uneval({ foo: true, nested: { bar: true } }, { parenthesis: true }),
@@ -187,8 +192,8 @@ test("uneval.js", ({ ensure }) => {
   })
 
   ensure("Date", () => {
-		expectUneval(new Date(), `Date(${Date.now()})`)
-		expectUneval(new Date(10), `Date(10)`)
+    expectUneval(new Date(), `Date(${Date.now()})`)
+    expectUneval(new Date(10), `Date(10)`)
   })
 
   ensure("Custom instance", () => {
