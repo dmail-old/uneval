@@ -187,7 +187,8 @@ test("uneval.js", ({ ensure }) => {
   })
 
   ensure("Date", () => {
-    expectUneval(new Date(), `Date(${Date.now()})`)
+		expectUneval(new Date(), `Date(${Date.now()})`)
+		expectUneval(new Date(10), `Date(10)`)
   })
 
   ensure("Custom instance", () => {
