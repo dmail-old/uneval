@@ -45,7 +45,7 @@ Executing above code logs in the console
   "regExp": /ok/
   "string": "dmail",
   "symbol": Symbol("foo"),
-  "typeError": TypeError('cannot ready property 0 of undefined'),
+  "typeError": TypeError("cannot ready property 0 of undefined"),
   "undefined": undefined,
 }
 ```
