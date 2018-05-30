@@ -90,6 +90,7 @@ test("uneval.js", ({ ensure }) => {
 
     assert.equal(uneval({ 0: "foo" }, { compact: true }), `{0: "foo"}`)
     assert.equal(uneval({ Infinity: "foo" }, { compact: true }), `{"Infinity": "foo"}`)
+    assert.equal(uneval({ name: "dam" }, { singleQuote: true, compact: true }), `{'name': 'dam'}`)
 
     assert.equal(
       uneval({ foo: true, nested: { bar: true } }, { parenthesis: true }),
@@ -162,6 +163,7 @@ test("uneval.js", ({ ensure }) => {
     expectUneval("", `""`)
     expectUneval("dam", `"dam"`)
     expectUneval("don't", `"don\\\'t"`)
+    assert.equal(eval(uneval("don't")), "don't")
     expectUneval(`his name is "dam"`, `"his name is \\\"dam\\\""`)
     expectUneval("a\nb", `"a\\nb"`)
     expectUneval("a\rb", `"a\\rb"`)
@@ -169,6 +171,10 @@ test("uneval.js", ({ ensure }) => {
     expectUneval("a\u2029b", `"a\\u2029b"`)
     expectUneval(new String(""), `String("")`)
     expectUneval(new String("dam"), `String("dam")`)
+
+    assert.equal(uneval("dam", { singleQuote: true }), `'dam'`)
+    assert.equal(uneval("don't", { singleQuote: true }), `'don\\\'t'`)
+    assert.equal(eval(uneval("don't", { singleQuote: true })), "don't")
   })
 
   ensure("symbol/Symbol", () => {

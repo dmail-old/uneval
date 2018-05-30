@@ -1,6 +1,7 @@
 # API
 
 * [parenthesis](#parenthesis)
+* [singleQuote](#singleQuote)
 * [useNew](#usenew)
 * [objectConstructor](#objectconstructor)
 * [compact](#compact)
@@ -35,6 +36,28 @@ uneval(value, { parenthesis: true })
     "bar": true
   })
 })
+*/
+```
+
+## singleQuote
+
+```javascript
+import { uneval } from "@dmail/uneval"
+
+const value = { foo: true }
+
+uneval(value)
+/*
+{
+  "foo": true
+}
+*/
+
+uneval(value, { singleQuote: true })
+/*
+{
+  'foo': true,
+}
 */
 ```
 
