@@ -100,10 +100,11 @@ Object({})
 Because `new Array()` is not equivalent to `[]` as shown below
 
 ```javascript
-const array = eval(`new Array(10)`)
+const arrayFromConstructorNotation = eval(`new Array(10)`)
+arrayFromConstructorNotation[0] // undefined
 
-array[0] // undefined
-array.length // 10
+const arrayFromLiteralNotation = eval(`[10]`)
+arrayFromLiteralNotation[0] // 10
 ```
 
 ## compact
