@@ -1,1 +1,1 @@
-export * from "./src/uneval.js"
+export { uneval } from "./src/uneval.js"

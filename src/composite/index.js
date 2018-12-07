@@ -2,19 +2,13 @@ import { unevalArray } from "./unevalArray.js"
 import { unevalObject } from "./unevalObject.js"
 import { unevalConstructor } from "../util.js"
 import { unevalPrimitive } from "../primitive/index.js"
+import { unevalDate } from "./unevalDate.js"
 
 const unevalBoolean = (value, options = {}) => {
   const { depth = 0 } = options
   const booleanSource = unevalPrimitive(value.valueOf(), { ...options, depth: depth + 1 })
 
   return unevalConstructor(`Boolean(${booleanSource})`, options)
-}
-
-const unevalDate = (value, options = {}) => {
-  const { depth = 0 } = options
-  const dateSource = unevalPrimitive(value.valueOf(), { ...options, depth: depth + 1 })
-
-  return unevalConstructor(`Date(${dateSource})`, options)
 }
 
 const unevalError = (value, options = {}) => {

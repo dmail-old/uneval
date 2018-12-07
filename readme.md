@@ -1,7 +1,7 @@
 # uneval
 
 [![npm](https://badge.fury.io/js/%40dmail%2Funeval.svg)](https://badge.fury.io/js/%40dmail%2Funeval)
-[![build](https://travis-ci.org/dmail/uneval.svg?branch=master)](http://travis-ci.org/dmail/uneval)
+[![build](https://travis-ci.com/dmail/uneval.svg?branch=master)](http://travis-ci.com/dmail/uneval)
 [![codecov](https://codecov.io/gh/dmail/uneval/branch/master/graph/badge.svg)](https://codecov.io/gh/dmail/uneval)
 
 > Convert a value into a source string
@@ -56,7 +56,7 @@ Prettier and eslint are used to ensure code style and format
 
 ## API
 
-* [api documentation](./docs/api.md)
+* [api documentation](./doc/api.md)
 
 ## Licensing
 
