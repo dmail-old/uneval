@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "sources": [
+    "../../test/undefined.js"
+  ],
+  "names": [
+    "undefined"
+  ],
+  "mappings": ";;AAAA;;AACA;;AAEA,mBAAM,mBAAOA,SAAP,CAAN,EAAyB,WAAzB"
+}

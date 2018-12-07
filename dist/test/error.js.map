@@ -1,0 +1,11 @@
+{
+  "version": 3,
+  "sources": [
+    "../../test/error.js"
+  ],
+  "names": [
+    "Error",
+    "RangeError"
+  ],
+  "mappings": ";;AAAA;;AACA;;AAEA,mBAAM,mBAAO,IAAIA,KAAJ,CAAU,MAAV,CAAP,CAAN,EAAkC,eAAlC;AACA,mBAAM,mBAAO,IAAIC,UAAJ,CAAe,MAAf,CAAP,CAAN,EAAuC,oBAAvC"
+}
