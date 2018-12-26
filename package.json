@@ -25,7 +25,7 @@
 		"@dmail/project-structure-compile-babel": "github:dmail/project-structure-compile-babel",
 		"@dmail/project-eslint-config": "github:dmail/project-eslint-config",
 		"@dmail/project-prettier-config": "github:dmail/project-prettier-config",
-		"prettier": "1.9.1",
+		"prettier": "1.15.3",
 		"@dmail/prettiest": "1.0.0",
 		"codecov": "2.3.0",
 		"eslint": "5.1.0",
@@ -36,7 +36,7 @@
 	},
 	"scripts": {
 		"lint": "eslint .",
-		"format": "prettiest",
+		"format": "node ./script/format.js",
 		"compile": "node ./script/compile.js",
 		"clean": "rimraf dist && rimraf coverage && rimraf .nyc_output",
 		"dist": "npm run clean && npm run compile",

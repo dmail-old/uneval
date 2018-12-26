@@ -3,15 +3,13 @@ const {
   compileFile,
   fileSystemWriteCompileResult,
 } = require("@dmail/project-structure-compile-babel")
-const projectConfig = require("../config/project.config.js")
+const { localRoot, metaMap, plugins } = require("../config/project.config.js")
 
-const { localRoot, plugins } = projectConfig
-
-forEachRessourceMatching(
+forEachRessourceMatching({
   localRoot,
-  projectConfig.metaMap,
-  ({ compile }) => compile,
-  async (ressource) => {
+  metaMap,
+  predicate: ({ compile }) => compile,
+  callback: async (ressource) => {
     const { code, map } = await compileFile(ressource, { localRoot, plugins })
     const outputFolder = `dist`
 
@@ -28,4 +26,4 @@ forEachRessourceMatching(
     )
     console.log(`${ressource} -> ${outputFolder}/${ressource}`)
   },
-)
+})

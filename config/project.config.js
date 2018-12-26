@@ -1,5 +1,5 @@
 const path = require("path")
-const { configToMetaMap } = require("@dmail/project-structure")
+const { patternGroupToMetaMap } = require("@dmail/project-structure")
 const eslintConfig = require("@dmail/project-eslint-config").config
 const prettierConfig = require("@dmail/project-prettier-config")
 const {
@@ -44,13 +44,13 @@ const pluginMap = pluginOptionMapToPluginMap({
 
 const plugins = pluginMapToPluginsForPlatform(pluginMap, "node", "8.0.0")
 
-const metaMap = configToMetaMap(structureConfig)
+const metaMap = patternGroupToMetaMap(structureConfig)
 
 module.exports = {
   localRoot,
+  metaMap,
   prettier: prettierConfig,
   eslint: eslintConfig,
-  metaMap,
   pluginMap,
   plugins,
 }
