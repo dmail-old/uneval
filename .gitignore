@@ -1,5 +1,5 @@
 package-lock.json
-config/env.json
+env.json
 coverage
 .nyc_output
 coverage.lcov

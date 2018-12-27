@@ -56,7 +56,7 @@ Prettier and eslint are used to ensure code style and format
 
 ## API
 
-* [api documentation](./doc/api.md)
+- [api documentation](./doc/api.md)
 
 ## Licensing
 

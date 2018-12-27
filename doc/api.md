@@ -1,15 +1,15 @@
 # API
 
-* [parenthesis](#parenthesis)
-* [singleQuote](#singleQuote)
-* [useNew](#usenew)
-* [objectConstructor](#objectconstructor)
-* [compact](#compact)
-* [showFunctionBody](#showfunctionbody)
-* [indentUsingTab](#indentusingtab)
-* [indentSize](#indentsize)
-* [constructor conversion](#constructor-conversion)
-* [class conversion](#class-conversion)
+- [parenthesis](#parenthesis)
+- [singleQuote](#singleQuote)
+- [useNew](#usenew)
+- [objectConstructor](#objectconstructor)
+- [compact](#compact)
+- [showFunctionBody](#showfunctionbody)
+- [indentUsingTab](#indentusingtab)
+- [indentSize](#indentsize)
+- [constructor conversion](#constructor-conversion)
+- [class conversion](#class-conversion)
 
 ## parenthesis
 
