@@ -39,6 +39,8 @@ const unevalString = (value, options) => {
 const { toString } = Object.prototype
 
 const getCompositeType = (object) => {
+  if (typeof object === "object" && Object.getPrototypeOf(object) === null) return "Object"
+
   const toStringResult = toString.call(object)
   // returns format is '[object ${tagName}]';
   // and we want ${tagName}

@@ -103,4 +103,26 @@ var _index = require("../index.js");
   }
 }`);
 }
+{
+  const actual = (0, _index.uneval)(Object.create(null));
+  const expected = "{}";
+  (0, _assert.equal)(actual, expected);
+}
+{
+  const object = Object.create(null);
+  object[Symbol.toStringTag] = "stuff";
+  const actual = (0, _index.uneval)(object);
+  const expected = "{}";
+  (0, _assert.equal)(actual, expected);
+}
+{
+  const object = Object.create(null);
+  object[Symbol.toStringTag] = "stuff";
+  object.foo = true;
+  const actual = (0, _index.uneval)(object);
+  const expected = `{
+  "foo": true
+}`;
+  (0, _assert.equal)(actual, expected);
+}
 //# sourceMappingURL=./object.js.map

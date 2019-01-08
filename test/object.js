@@ -90,3 +90,28 @@ equal(
 }`,
   )
 }
+
+{
+  const actual = uneval(Object.create(null))
+  const expected = "{}"
+  equal(actual, expected)
+}
+
+{
+  const object = Object.create(null)
+  object[Symbol.toStringTag] = "stuff"
+  const actual = uneval(object)
+  const expected = "{}"
+  equal(actual, expected)
+}
+
+{
+  const object = Object.create(null)
+  object[Symbol.toStringTag] = "stuff"
+  object.foo = true
+  const actual = uneval(object)
+  const expected = `{
+  "foo": true
+}`
+  equal(actual, expected)
+}
