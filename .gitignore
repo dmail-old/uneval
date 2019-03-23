@@ -1,5 +1,6 @@
-package-lock.json
-env.json
-coverage
-.nyc_output
-coverage.lcov
+/node_modules
+/package-lock.json
+/env.json
+/coverage
+/.nyc_output
+/coverage.lcov
