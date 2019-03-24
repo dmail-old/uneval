@@ -1,1 +1,5 @@
-module.exports = require("@dmail/project-eslint-config").config
+const { createConfig } = require("@jsenv/eslint-config")
+
+const config = createConfig()
+
+module.exports = config

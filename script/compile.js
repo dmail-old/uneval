@@ -1,21 +1,24 @@
+const { transformAsync } = require("@babel/core")
 const {
   pluginOptionMapToPluginMap,
   pluginMapToPluginsForPlatform,
-  compileFile,
   fileSystemWriteCompileResult,
 } = require("@dmail/project-structure-compile-babel")
-const { patternGroupToMetaMap, forEachRessourceMatching } = require("@dmail/project-structure")
-const { localRoot } = require("./util.js")
+const {
+  namedValueDescriptionToMetaDescription,
+  selectAllFileInsideFolder,
+} = require("@dmail/project-structure")
+const { projectFolder } = require("./util.js")
+const { readFile } = require("./readFile.js")
 
-const metaMap = patternGroupToMetaMap({
+const metaDescription = namedValueDescriptionToMetaDescription({
   compile: {
-    "**/*.js": true,
-    node_modules: false, // eslint-disable-line camelcase
-    dist: false,
-    script: false,
-    config: false,
-    ".eslintrc.js": false,
-    "prettier.config.js": false,
+    "/**/*.js": true,
+    "/node_modules/": false,
+    "/dist/": false,
+    "/script/": false,
+    "/.eslintrc.js": false,
+    "/prettier.config.js": false,
   },
 })
 
@@ -53,13 +56,23 @@ const pluginMap = pluginOptionMapToPluginMap({
 
 const plugins = pluginMapToPluginsForPlatform(pluginMap, "node", "8.0.0")
 
-forEachRessourceMatching({
-  localRoot,
-  metaMap,
+const outputFolder = `dist`
+
+selectAllFileInsideFolder({
+  pathname: projectFolder,
+  metaDescription,
   predicate: ({ compile }) => compile,
-  callback: async (ressource) => {
-    const { code, map } = await compileFile(ressource, { localRoot, plugins })
-    const outputFolder = `dist`
+  transformFile: async ({ filenameRelative }) => {
+    const filename = `${projectFolder}/${filenameRelative}`
+    const source = await readFile(filename)
+
+    const { code, map } = await transformAsync(source, {
+      plugins,
+      filenameRelative,
+      filename,
+      sourceMaps: true,
+      sourceFileName: filenameRelative,
+    })
 
     await fileSystemWriteCompileResult(
       {
@@ -67,12 +80,12 @@ forEachRessourceMatching({
         map,
       },
       {
-        localRoot,
-        outputFile: ressource,
+        localRoot: projectFolder,
+        outputFile: filenameRelative,
         outputFolder,
       },
     )
 
-    console.log(`${ressource} -> ${outputFolder}/${ressource}`)
+    console.log(`${filenameRelative} -> ${outputFolder}/${filenameRelative}`)
   },
 })

@@ -12,21 +12,21 @@
 	"main": "dist/index.js",
 	"module": "index.js",
 	"files": [
-		"dist",
+		"index.js",
 		"src",
-		"index.js"
+		"dist"
 	],
 	"engines": {
 		"node": ">=8.6.0"
 	},
 	"dependencies": {},
 	"devDependencies": {
-		"@dmail/project-structure": "github:dmail/project-structure",
-		"@dmail/project-structure-compile-babel": "github:dmail/project-structure-compile-babel",
-		"@dmail/project-eslint-config": "github:dmail/project-eslint-config",
-		"@dmail/project-prettier-config": "github:dmail/project-prettier-config",
+		"@jsenv/eslint-config": "8.0.0",
+		"@jsenv/prettier-config": "1.0.0",
+		"@dmail/project-structure": "2.0.0",
+		"@dmail/project-structure-compile-babel": "1.0.0",
+		"@dmail/prettiest": "3.0.0",
 		"prettier": "1.15.3",
-		"@dmail/prettiest": "github:dmail/prettiest",
 		"codecov": "2.3.0",
 		"eslint": "5.1.0",
 		"eslint-plugin-import": "2.6.0",
@@ -36,7 +36,7 @@
 	},
 	"scripts": {
 		"lint": "eslint .",
-		"format": "node ./script/format.js",
+		"check-format": "node ./script/check-format.js",
 		"compile": "node ./script/compile.js",
 		"clean": "rimraf dist && rimraf coverage && rimraf .nyc_output",
 		"dist": "npm run clean && npm run compile",
