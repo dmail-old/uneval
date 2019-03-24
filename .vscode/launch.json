@@ -2,13 +2,17 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "node",
       "type": "node",
       "request": "launch",
-      "name": "Launch with node",
+      "protocol": "inspector",
       "program": "${file}",
-      "preLaunchTask": "compile", // ensure dist is fresh (compile before running)
       "autoAttachChildProcesses": true,
       "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "/*": "${workspaceRoot}/*"
+      },
+      "smartStep": true,
       // "outFiles": ["${workspaceRoot}/build/**/*.js"],
       // "outputCapture": "std",
       // https://github.com/Microsoft/vscode-chrome-debug-core/commit/eb552d621f1f6fbebcfca5d2390020dc7d8877e0#diff-b4f13aa3c326d081dea7875f9c0fe84aR31
@@ -17,26 +21,78 @@
         // https://github.com/Microsoft/vscode-react-native/issues/620
         "<node_internals>/**/*.js"
       ]
+      // "trace": true,
     },
+    // this debug configuration is supposed to work
+    // but in practice it often fails (vscode waits and do nothing).
+    // it seems vscode fails to auto attach the child process
+    // and you end up having to restart vscode or retry multiple times until
+    // it works.
+    // It is very annoying and I have no clue where it comes from.
+    // It should be reproductible by debugging a node script
+    // spawning a child process.
     {
-      "name": "Launch from dist",
+      "name": "jsenv-node",
       "type": "node",
       "request": "launch",
       "protocol": "inspector",
-      "preLaunchTask": "compile", // ensure dist is fresh (compile before running)
-      "args": ["${workspaceRoot}/dist/${relativeFile}"],
+      "program": "${workspaceFolder}/script/run-node/run-node.js",
+      "args": ["--file=${relativeFile}"],
       "autoAttachChildProcesses": true,
       "sourceMaps": true,
       "sourceMapPathOverrides": {
         "/*": "${workspaceRoot}/*"
       },
+      // "smartStep": true,
       "skipFiles": [
-        // skip node modules
         "node_modules/**",
-        // skip node internals
+        // https://github.com/Microsoft/vscode-react-native/issues/620
+        "<node_internals>/**/*.js"
+        // "script/run-node.js"
+      ]
+    },
+    {
+      "name": "jsenv-chrome",
+      "type": "chrome",
+      "request": "launch",
+      // "preLaunchTask": "start-browsing-server",
+      // "postDebugTask": "stop-browsing-server",
+      "url": "http://127.0.0.1:3456/${relativeFile}",
+      // "runtimeExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "runtimeArgs": ["--allow-file-access-from-files", "--disable-web-security"],
+      // do not specify webroot, otherwise remote files like
+      // http://http://127.0.0.1:3001/compiled/file.js will be considered as being at
+      // ${workspaceRoot}/compiled/file.js
+      // but the compiled folder is empty
+      // let vscode think the file is distant and use sourceMapPathOverrides so that
+      // vscode can track source files
+      // "webRoot": "${workspaceFolder}",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "/*": "${workspaceRoot}/*"
+      },
+      "smartStep": true,
+      "skipFiles": [
+        "node_modules/**",
+        // https://github.com/Microsoft/vscode-react-native/issues/620
         "<node_internals>/**/*.js"
       ]
-      // "trace": true
+    },
+    {
+      "name": "jsenv-node-attach-child",
+      "type": "node",
+      "request": "attach",
+      "port": 40010,
+      "smartStep": true,
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "/*": "${workspaceRoot}/*"
+      },
+      "skipFiles": [
+        "node_modules/**",
+        // https://github.com/Microsoft/vscode-react-native/issues/620
+        "<node_internals>/**/*.js"
+      ]
     }
   ]
 }
