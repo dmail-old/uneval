@@ -1,12 +1,10 @@
 const { launchNode, launchChromium } = require("@jsenv/core")
 
 const testDescription = {
-  "/test/browser/*.test.*": {
+  "/test/**/*.test.js": {
     browser: {
       launch: launchChromium,
     },
-  },
-  "/test/node/*.test.*": {
     node: {
       launch: launchNode,
     },

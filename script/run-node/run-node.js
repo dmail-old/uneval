@@ -24,6 +24,6 @@ execute({
       debugPort: 40010,
     }),
   filenameRelative,
-  verbose: true,
+  verbose: false,
   mirrorConsole: true,
 })
