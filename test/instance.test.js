@@ -8,7 +8,7 @@ import { uneval } from "../index.js"
   const customInstance = new CustomConstructor()
   const actual = uneval(customInstance)
   const expected = `CustomConstructor({
-    "foo": true
-  })`
+  "foo": true
+})`
   assert({ actual, expected })
 }

@@ -10,6 +10,7 @@ execute({
   projectFolder,
   compileInto,
   babelPluginDescription,
+  compileGroupCount: 2,
   protocol: "http",
   launch: (options) =>
     launchNode({

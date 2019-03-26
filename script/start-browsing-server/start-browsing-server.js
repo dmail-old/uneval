@@ -12,6 +12,7 @@ startBrowsingServer({
   importMap,
   projectFolder,
   compileInto,
+  compileGroupCount: 2,
   babelPluginDescription,
   browsableDescription,
   protocol: "http",

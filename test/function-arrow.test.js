@@ -1,7 +1,11 @@
 import { assert } from "./assert.js"
 import { uneval } from "../index.js"
 
-assert({ actual: uneval(() => {}), expected: `() => {/* hidden */}` })
+{
+  const actual = uneval(() => {})
+  const expected = `() => {/* hidden */}`
+  assert({ actual, expected })
+}
 
 assert({ actual: uneval(() => {}, { showFunctionBody: true }), expected: "() => {}" })
 
@@ -28,7 +32,7 @@ assert({ actual: uneval(() => true, { showFunctionBody: true }), expected: `() =
   }
   const actual = uneval(nested)
   const expected = `{
-    "function": () => {/* hidden */}
-  }`
+  "function": () => {/* hidden */}
+}`
   assert({ actual, expected })
 }
