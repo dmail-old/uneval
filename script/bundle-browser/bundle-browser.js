@@ -12,7 +12,7 @@ bundleBrowser({
   into: "dist/browser",
   entryPointsDescription,
   babelPluginDescription,
-  globalName: "platformModule",
+  globalName: "__dmail_uneval__",
   verbose: true,
   // here can add usageMap, compileGroupCount
 })
