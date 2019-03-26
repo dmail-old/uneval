@@ -8,6 +8,7 @@ test({
   projectFolder,
   compileInto,
   executeDescription: testDescription,
+  compileGroupCount: 2,
   babelPluginDescription,
   // launching more than one chromium instance
   // from one node process triggers the following warning
