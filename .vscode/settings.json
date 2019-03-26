@@ -1,3 +1,13 @@
 {
-  "editor.formatOnSave": true
+  "eslint.autoFixOnSave": false,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": false
+  },
+  "search.exclude": {
+    "dist/**": true,
+    ".dist/**": true,
+    "coverage/**": true
+  },
+  "javascript.validate.enable": false
 }

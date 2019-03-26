@@ -1,4 +1,4 @@
-import { equal } from "assert"
+import { assert } from "./assert.js"
 import { uneval } from "../index.js"
 
 {
@@ -6,10 +6,9 @@ import { uneval } from "../index.js"
     this.foo = true
   }
   const customInstance = new CustomConstructor()
-  equal(
-    uneval(customInstance),
-    `CustomConstructor({
+  const actual = uneval(customInstance)
+  const expected = `CustomConstructor({
   "foo": true
-})`,
-  )
+})`
+  assert({ actual, expected })
 }
