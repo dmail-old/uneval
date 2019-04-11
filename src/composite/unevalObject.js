@@ -1,8 +1,20 @@
-import { unevalConstructor, preNewLineAndIndentation, wrapNewLineAndIndentation } from "../util.js"
-import { unevalPrimitive } from "../primitive/index.js"
+import { preNewLineAndIndentation, wrapNewLineAndIndentation } from "../util.js"
+import { unevalConstructor } from "../unevalConstructor.js"
 
-export const unevalObject = (value, options = {}) => {
-  const { seen = [] } = options
+export const unevalObject = (
+  value,
+  {
+    nestedUneval,
+    seen = [],
+    compact,
+    depth,
+    indentUsingTab,
+    indentSize,
+    objectConstructor,
+    parenthesis,
+    useNew,
+  },
+) => {
   if (seen.indexOf(value) > -1) {
     return "Symbol.for('circular')"
   }
@@ -12,23 +24,14 @@ export const unevalObject = (value, options = {}) => {
   const propertyNames = Object.getOwnPropertyNames(value)
   let i = 0
   const j = propertyNames.length
-  const { depth = 0 } = options
-  const { compact } = options
-
-  const nestedOptions = {
-    ...options,
-    depth: depth + 1,
-    seen,
-  }
 
   while (i < j) {
     const propertyName = propertyNames[i]
     const propertyNameAsNumber = parseInt(propertyName, 10)
-    const propertyNameSource = unevalPrimitive(
+    const propertyNameSource = nestedUneval(
       Number.isInteger(propertyNameAsNumber) ? propertyNameAsNumber : propertyName,
-      nestedOptions,
     )
-    const propertyValueSource = unevalPrimitive(value[propertyName], nestedOptions)
+    const propertyValueSource = nestedUneval(value[propertyName], { seen })
 
     if (compact) {
       if (i === 0) {
@@ -41,7 +44,7 @@ export const unevalObject = (value, options = {}) => {
     } else {
       propertiesSource += `,${preNewLineAndIndentation(
         `${propertyNameSource}: ${propertyValueSource}`,
-        options,
+        { depth, indentUsingTab, indentSize },
       )}`
     }
 
@@ -53,18 +56,21 @@ export const unevalObject = (value, options = {}) => {
     if (compact) {
       objectSource = `${propertiesSource}`
     } else {
-      objectSource = `${wrapNewLineAndIndentation(propertiesSource, options)}`
+      objectSource = `${wrapNewLineAndIndentation(propertiesSource, {
+        depth,
+        indentUsingTab,
+        indentSize,
+      })}`
     }
   } else {
     objectSource = ""
   }
 
-  const { objectConstructor } = options
   if (objectConstructor) {
     objectSource = `Object({${objectSource}})`
   } else {
     objectSource = `{${objectSource}}`
   }
 
-  return unevalConstructor(objectSource, options)
+  return unevalConstructor(objectSource, { parenthesis, useNew })
 }

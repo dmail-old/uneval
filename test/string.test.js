@@ -1,4 +1,4 @@
-import { assert } from "./assert.js"
+import { assert } from "@dmail/assert"
 import { uneval } from "../index.js"
 
 assert({ actual: uneval(""), expected: `""` })

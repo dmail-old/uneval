@@ -27,18 +27,16 @@ export const quote = (value) => {
   return escapedString
 }
 
-export const unevalConstructor = (value, { parenthesis, useNew }) => {
-  let formattedString = value
+export const preNewLineAndIndentation = (value, { depth, indentUsingTab, indentSize }) => {
+  return `${newLineAndIndent({
+    count: depth + 1,
+    useTabs: indentUsingTab,
+    size: indentSize,
+  })}${value}`
+}
 
-  if (parenthesis) {
-    formattedString = `(${value})`
-  }
-
-  if (useNew) {
-    formattedString = `new ${formattedString}`
-  }
-
-  return formattedString
+const postNewLineAndIndentation = ({ depth, indentUsingTab, indentSize }) => {
+  return newLineAndIndent({ count: depth, useTabs: indentUsingTab, size: indentSize })
 }
 
 const newLineAndIndent = ({ count, useTabs, size }) => {
@@ -50,18 +48,10 @@ const newLineAndIndent = ({ count, useTabs, size }) => {
   return "\n" + " ".repeat(count * size)
 }
 
-export const preNewLineAndIndentation = (value, { depth = 0, indentUsingTab, indentSize }) => {
-  return `${newLineAndIndent({
-    count: depth + 1,
-    useTabs: indentUsingTab,
-    size: indentSize,
-  })}${value}`
-}
-
-const postNewLineAndIndentation = ({ depth = 0, indentUsingTab, indentSize }) => {
-  return newLineAndIndent({ count: depth, useTabs: indentUsingTab, size: indentSize })
-}
-
-export const wrapNewLineAndIndentation = (value, options) => {
-  return `${preNewLineAndIndentation(value, options)}${postNewLineAndIndentation(options)}`
+export const wrapNewLineAndIndentation = (value, { depth, indentUsingTab, indentSize }) => {
+  return `${preNewLineAndIndentation(value, {
+    depth,
+    indentUsingTab,
+    indentSize,
+  })}${postNewLineAndIndentation({ depth, indentUsingTab, indentSize })}`
 }

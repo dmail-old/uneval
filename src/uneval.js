@@ -1,3 +1,53 @@
-// https://github.com/jsenv/core/blob/959e76068b62c23d7047f6a8c7a3d6582ac25177/src/api/util/uneval.js
+/* eslint-disable import/max-dependencies */
+import { valueToType } from "./valueToType.js"
+import { primitiveMap } from "./primitive/index.js"
+import { compositeMap } from "./composite/index.js"
+import { unevalConstructor } from "./unevalConstructor.js"
+import { unevalObject } from "./composite/unevalObject.js"
 
-export { unevalPrimitive as uneval } from "./primitive/index.js"
+export const uneval = (
+  value,
+  {
+    parenthesis = false,
+    singleQuote = false,
+    useNew = false,
+    objectConstructor = false,
+    compact = false,
+    showFunctionBody = false,
+    indentUsingTab = false,
+    indentSize = 2,
+  } = {},
+) => {
+  const scopedUneval = (scopedValue, scopedOptions) => {
+    const { primitiveType, compositeType } = valueToType(scopedValue)
+    const options = {
+      ...scopedOptions,
+      nestedUneval: (nestedValue, nestedOptions = {}) => {
+        return scopedUneval(nestedValue, {
+          ...scopedOptions,
+          depth: scopedOptions.depth + 1,
+          ...nestedOptions,
+        })
+      },
+    }
+    if (primitiveType) return primitiveMap[primitiveType](scopedValue, options)
+    if (compositeType in compositeMap) return compositeMap[compositeType](scopedValue, options)
+
+    return unevalConstructor(`${compositeType}(${unevalObject(scopedValue, options)})`, {
+      ...options,
+      parenthesis: false,
+    })
+  }
+
+  return scopedUneval(value, {
+    parenthesis,
+    singleQuote,
+    useNew,
+    objectConstructor,
+    compact,
+    showFunctionBody,
+    indentUsingTab,
+    indentSize,
+    depth: 0,
+  })
+}

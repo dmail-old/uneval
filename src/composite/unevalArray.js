@@ -1,8 +1,10 @@
-import { unevalConstructor, preNewLineAndIndentation, wrapNewLineAndIndentation } from "../util.js"
-import { unevalPrimitive } from "../primitive/index.js"
+import { preNewLineAndIndentation, wrapNewLineAndIndentation } from "../util.js"
+import { unevalConstructor } from "../unevalConstructor.js"
 
-export const unevalArray = (value, options = {}) => {
-  const { seen = [] } = options
+export const unevalArray = (
+  value,
+  { seen = [], nestedUneval, compact, depth, indentUsingTab, indentSize, parenthesis, useNew },
+) => {
   if (seen.indexOf(value) > -1) {
     return "Symbol.for('circular')"
   }
@@ -11,17 +13,9 @@ export const unevalArray = (value, options = {}) => {
   let valuesSource = ""
   let i = 0
   const j = value.length
-  const { compact } = options
-  const { depth = 0 } = options
-
-  const nestedOptions = {
-    ...options,
-    depth: depth + 1,
-    seen,
-  }
 
   while (i < j) {
-    const valueSource = value.hasOwnProperty(i) ? unevalPrimitive(value[i], nestedOptions) : ""
+    const valueSource = value.hasOwnProperty(i) ? nestedUneval(value[i], { seen }) : ""
     if (compact) {
       if (i === 0) {
         valuesSource += valueSource
@@ -33,7 +27,11 @@ export const unevalArray = (value, options = {}) => {
     } else if (i === 0) {
       valuesSource += valueSource
     } else {
-      valuesSource += `,${preNewLineAndIndentation(valueSource, options)}`
+      valuesSource += `,${preNewLineAndIndentation(valueSource, {
+        depth,
+        indentUsingTab,
+        indentSize,
+      })}`
     }
     i++
   }
@@ -43,7 +41,7 @@ export const unevalArray = (value, options = {}) => {
     if (compact) {
       arraySource = `${valuesSource}`
     } else {
-      arraySource = wrapNewLineAndIndentation(valuesSource, options)
+      arraySource = wrapNewLineAndIndentation(valuesSource, { depth, indentUsingTab, indentSize })
     }
   } else {
     arraySource = ""
@@ -51,5 +49,5 @@ export const unevalArray = (value, options = {}) => {
 
   arraySource = `[${arraySource}]`
 
-  return unevalConstructor(arraySource, options)
+  return unevalConstructor(arraySource, { parenthesis, useNew })
 }

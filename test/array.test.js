@@ -1,40 +1,68 @@
-import { assert } from "./assert.js"
+import { assert } from "@dmail/assert"
 import { uneval } from "../index.js"
 
-assert({ actual: uneval([]), expected: `[]` })
+{
+  const actual = uneval([])
+  const expected = `[]`
+  assert({ actual, expected })
+}
 
-assert({ actual: uneval([[]], { compact: true }), expected: `[[]]` })
+{
+  const actual = uneval([[]], { compact: true })
+  const expected = `[[]]`
+  assert({ actual, expected })
+}
 
-assert({ actual: uneval(Array(3), { compact: true }), expected: `[,,]` })
+{
+  const actual = uneval(Array(3), { compact: true })
+  const expected = `[,,]`
+  assert({ actual, expected })
+}
 
-assert({
-  actual: uneval([Symbol()]),
-  expected: `[
+{
+  const actual = uneval([Symbol()])
+  const expected = `[
   Symbol()
-]`,
-})
+]`
+  assert({
+    actual,
+    expected,
+  })
+}
 
 {
   // eslint-disable-next-line no-array-constructor
   const newArray = new Array("foo", 1)
-  assert({
-    actual: uneval(newArray),
-    expected: `[
+
+  {
+    const actual = uneval(newArray)
+    const expected = `[
   "foo",
   1
-]`,
-  })
-  assert({ actual: uneval(newArray, { compact: true }), expected: `["foo", 1]` })
+]`
+    assert({
+      actual,
+      expected,
+    })
+  }
+
+  {
+    const actual = uneval(newArray, { compact: true })
+    const expected = `["foo", 1]`
+    assert({ actual, expected })
+  }
 }
 
 {
   const circularArray = [0]
   circularArray.push(circularArray)
-  assert({
-    actual: uneval(circularArray),
-    expected: `[
+  const actual = uneval(circularArray)
+  const expected = `[
   0,
   Symbol.for('circular')
-]`,
+]`
+  assert({
+    actual,
+    expected,
   })
 }

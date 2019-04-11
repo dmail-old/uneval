@@ -1,9 +1,6 @@
-import { unevalConstructor } from "../util.js"
-import { unevalPrimitive } from "../primitive/index.js"
+import { unevalConstructor } from "../unevalConstructor.js"
 
-export const unevalDate = (value, options = {}) => {
-  const { depth = 0 } = options
-  const dateSource = unevalPrimitive(value.valueOf(), { ...options, depth: depth + 1 })
-
-  return unevalConstructor(`Date(${dateSource})`, options)
+export const unevalDate = (value, { nestedUneval, useNew, parenthesis }) => {
+  const dateSource = nestedUneval(value.valueOf())
+  return unevalConstructor(`Date(${dateSource})`, { useNew, parenthesis })
 }

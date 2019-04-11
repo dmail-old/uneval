@@ -19,7 +19,7 @@
 	],
 	"dependencies": {},
 	"devDependencies": {
-		"@jsenv/core": "5.4.0",
+		"@jsenv/core": "5.6.0",
 		"@jsenv/eslint-config": "8.0.0",
 		"@jsenv/eslint-import-resolver": "4.1.0",
 		"@jsenv/prettier-config": "1.0.0",
@@ -41,9 +41,9 @@
 		"prettier-check-project": "node ./script/prettier-check-project/prettier-check-project.js",
 		"generate-coverage": "node ./script/generate-coverage/generate-coverage.js",
 		"upload-coverage": "node ./script/upload-coverage/upload-coverage.js",
+		"dist": "npm run clean && npm run bundle-browser && npm run bundle-node",
 		"bundle-browser": "node ./script/bundle-browser/bundle-browser.js",
 		"bundle-node": "node ./script/bundle-node/bundle-node.js",
-		"dist": "npm run clean && npm run bundle-browser && npm run bundle-node",
 		"clean": "rimraf dist && rimraf coverage",
 		"reinstall": "npm run clean && rimraf node_modules && npm install",
 		"prepublishOnly": "npm run dist"
