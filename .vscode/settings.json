@@ -1,6 +1,7 @@
 {
-  "eslint.autoFixOnSave": false,
   "editor.formatOnSave": true,
+  "javascript.validate.enable": false,
+  "eslint.autoFixOnSave": false,
   "editor.codeActionsOnSave": {
     "source.organizeImports": false
   },
@@ -8,6 +9,5 @@
     "dist/**": true,
     ".dist/**": true,
     "coverage/**": true
-  },
-  "javascript.validate.enable": false
+  }
 }

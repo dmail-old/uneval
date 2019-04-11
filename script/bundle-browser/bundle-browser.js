@@ -1,18 +1,13 @@
 const { bundleBrowser } = require("@jsenv/core")
-const {
-  projectFolder,
-  entryPointsDescription,
-  babelPluginDescription,
-} = require("../../jsenv.config.js")
-const importMap = require("../../importMap.json")
+const { importMap, projectFolder, babelConfigMap } = require("../../jsenv.config.js")
 
 bundleBrowser({
   importMap,
   projectFolder,
   into: "dist/browser",
-  entryPointsDescription,
-  babelPluginDescription,
-  globalName: "__dmail_uneval__",
+  entryPointMap: {
+    main: "index.js",
+  },
+  babelConfigMap,
   verbose: true,
-  // here can add usageMap, compileGroupCount
 })

@@ -13,25 +13,13 @@
         "/*": "${workspaceRoot}/*"
       },
       "smartStep": true,
-      // "outFiles": ["${workspaceRoot}/build/**/*.js"],
-      // "outputCapture": "std",
       // https://github.com/Microsoft/vscode-chrome-debug-core/commit/eb552d621f1f6fbebcfca5d2390020dc7d8877e0#diff-b4f13aa3c326d081dea7875f9c0fe84aR31
       "skipFiles": [
         "node_modules/**",
-        // "node_modules/@babel/**",
         // https://github.com/Microsoft/vscode-react-native/issues/620
         "<node_internals>/**/*.js"
       ]
-      // "trace": true,
     },
-    // this debug configuration is supposed to work
-    // but in practice it often fails (vscode waits and do nothing).
-    // it seems vscode fails to auto attach the child process
-    // and you end up having to restart vscode or retry multiple times until
-    // it works.
-    // It is very annoying and I have no clue where it comes from.
-    // It should be reproductible by debugging a node script
-    // spawning a child process.
     {
       "name": "jsenv-node",
       "type": "node",

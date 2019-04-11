@@ -1,7 +1,7 @@
-const { checkFormat } = require("@jsenv/core")
+const { prettierCheckProject } = require("@jsenv/prettier-check-project")
 const { projectFolder } = require("../../jsenv.config.js")
 
-const formattableDescription = {
+const prettifyDescription = {
   // js
   "/index.js": true,
   "/index.test.js": true,
@@ -20,7 +20,7 @@ const formattableDescription = {
   "/script/**/*.md": true,
 }
 
-checkFormat({
+prettierCheckProject({
   projectFolder,
-  formattableDescription,
+  prettifyDescription,
 })

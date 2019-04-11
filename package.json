@@ -1,6 +1,6 @@
 {
 	"name": "@dmail/uneval",
-	"version": "4.4.0",
+	"version": "4.5.0",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
@@ -9,24 +9,23 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"main": "dist/node/main.js",
 	"module": "index.js",
+	"browser": "dist/browser/main.js",
+	"main": "dist/node/main.js",
 	"files": [
-		"index.js",
-		"src",
-		"dist"
+		"/index.js",
+		"/src/",
+		"/dist/"
 	],
-	"engines": {
-		"node": ">=8.6.0"
-	},
 	"dependencies": {},
 	"devDependencies": {
-		"@jsenv/core": "4.4.0",
+		"@jsenv/core": "5.4.0",
 		"@jsenv/eslint-config": "8.0.0",
-		"@jsenv/eslint-import-resolver": "2.0.0",
+		"@jsenv/eslint-import-resolver": "4.1.0",
 		"@jsenv/prettier-config": "1.0.0",
-		"@jsenv/babel-plugin-description": "1.0.0",
-		"@dmail/assert": "2.0.0",
+		"@jsenv/prettier-check-project": "1.0.0",
+		"@jsenv/babel-config-map": "1.0.0",
+		"@dmail/assert": "3.0.0",
 		"babel-eslint": "11.0.0-beta.0",
 		"prettier": "1.15.3",
 		"codecov": "2.3.0",
@@ -36,17 +35,17 @@
 	},
 	"scripts": {
 		"generate-import-map": "node ./script/generate-import-map/generate-import-map.js",
-		"lint": "eslint .",
-		"check-format": "node ./script/check-format/check-format.js",
+		"start-browsing-server": "node ./script/start-browsing-server/start-browsing-server.js",
 		"test": "node ./script/test/test.js",
+		"eslint-check-project": "eslint .",
+		"prettier-check-project": "node ./script/prettier-check-project/prettier-check-project.js",
 		"generate-coverage": "node ./script/generate-coverage/generate-coverage.js",
 		"upload-coverage": "node ./script/upload-coverage/upload-coverage.js",
-		"start-browsing-server": "node ./script/start-browsing-server/start-browsing-server.js",
-		"clean": "rimraf dist && rimraf coverage",
 		"bundle-browser": "node ./script/bundle-browser/bundle-browser.js",
 		"bundle-node": "node ./script/bundle-node/bundle-node.js",
 		"dist": "npm run clean && npm run bundle-browser && npm run bundle-node",
-		"prepublishOnly": "npm run dist",
-		"reinstall": "npm run clean && rimraf node_modules && npm install"
+		"clean": "rimraf dist && rimraf coverage",
+		"reinstall": "npm run clean && rimraf node_modules && npm install",
+		"prepublishOnly": "npm run dist"
 	}
 }

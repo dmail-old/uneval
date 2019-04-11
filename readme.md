@@ -12,48 +12,6 @@
 npm install @dmail/uneval
 ```
 
-```javascript
-import { uneval } from "@dmail/uneval"
-
-console.log(
-  uneval({
-    array: [],
-    boolean: true,
-    date: new Date(7),
-    function: (a) => a,
-    null: null,
-    number: 10,
-    regExp: /ok/,
-    string: "dmail",
-    symbol: Symbol("foo"),
-    typeError: new TypeError("cannot read property 0 of undefined"),
-    undefined: undefined,
-  }),
-)
-```
-
-Executing above code logs in the console
-
-```javascript
-{
-  "array": [],
-  "boolean": true,
-  "date": Date(7),
-  "function": () => {/* hidden */},
-  "null": null,
-  "number": 10,
-  "regExp": /ok/
-  "string": "dmail",
-  "symbol": Symbol("foo"),
-  "typeError": TypeError("cannot ready property 0 of undefined"),
-  "undefined": undefined,
-}
-```
-
-## Style guide
-
-Prettier and eslint are used to ensure code style and format
-
 ## API
 
 - [api documentation](./doc/api.md)

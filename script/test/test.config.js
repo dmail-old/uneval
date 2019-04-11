@@ -1,6 +1,6 @@
 const { launchNode, launchChromium } = require("@jsenv/core")
 
-const testDescription = {
+const executeDescription = {
   "/test/**/*.test.js": {
     browser: {
       launch: launchChromium,
@@ -10,4 +10,4 @@ const testDescription = {
     },
   },
 }
-exports.testDescription = testDescription
+exports.executeDescription = executeDescription
