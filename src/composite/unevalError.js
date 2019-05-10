@@ -18,15 +18,15 @@ const makeErrorSourceAccurate = ({ error, errorSource, nestedUneval }) => {
     return name !== "message" && name !== "stack"
   })
 
-  const definePropertiesSource = ownPropertyNames
-    .map((name) => {
-      const descriptor = Object.getOwnPropertyDescriptor(error, name)
-      return `Object.defineProperty(error, ${nestedUneval(name)}, ${nestedUneval(descriptor)})`
-    })
-    .join("/n  ")
+  const definePropertiesSource = ownPropertyNames.map((name) => {
+    const descriptor = Object.getOwnPropertyDescriptor(error, name)
+    return `Object.defineProperty(error, ${nestedUneval(name)}, ${nestedUneval(descriptor)})`
+  })
 
+  // TODO: make indentation dependent of current depth
   return `(function (error) {
-  ${definePropertiesSource}
+  ${definePropertiesSource.join(`
+  `)}
   return error
 })(${errorSource})`
 }
