@@ -16,6 +16,7 @@ export const uneval = (
     showFunctionBody = false,
     indentUsingTab = false,
     indentSize = 2,
+    accurateErrorProperties = false,
   } = {},
 ) => {
   const scopedUneval = (scopedValue, scopedOptions) => {
@@ -48,6 +49,7 @@ export const uneval = (
     showFunctionBody,
     indentUsingTab,
     indentSize,
+    accurateErrorProperties,
     depth: 0,
   })
 }
