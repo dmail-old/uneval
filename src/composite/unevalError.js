@@ -15,7 +15,7 @@ export const unevalError = (
 
 const makeErrorSourceAccurate = ({ error, errorSource, nestedUneval }) => {
   const ownPropertyNames = Object.getOwnPropertyNames(error).filter((name) => {
-    return name !== "message" && name !== "stack"
+    return name !== "message"
   })
 
   const definePropertiesSource = ownPropertyNames.map((name) => {

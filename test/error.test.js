@@ -13,6 +13,12 @@ assert({ actual: uneval(new RangeError("here")), expected: `RangeError("here")` 
   })
   const actual = uneval(actualError, { accurateErrorProperties: true })
   const expected = `(function (error) {
+  Object.defineProperty(error, "stack", {
+    "value": ${uneval(actualError.stack)},
+    "writable": true,
+    "enumerable": false,
+    "configurable": true
+  })
   Object.defineProperty(error, "bar", {
     "value": "bar",
     "writable": false,
