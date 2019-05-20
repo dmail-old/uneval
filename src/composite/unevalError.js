@@ -1,14 +1,17 @@
 import { unevalConstructor } from "../unevalConstructor.js"
 
 export const unevalError = (
-  value,
+  error,
   { nestedUneval, useNew, parenthesis, accurateErrorProperties },
 ) => {
-  const messageSource = nestedUneval(value.message)
+  const messageSource = nestedUneval(error.message)
 
-  const errorSource = unevalConstructor(`${value.name}(${messageSource})`, { useNew, parenthesis })
+  const errorSource = unevalConstructor(`${errorToConstructorName(error)}(${messageSource})`, {
+    useNew,
+    parenthesis,
+  })
   if (accurateErrorProperties) {
-    return makeErrorSourceAccurate({ error: value, errorSource, nestedUneval })
+    return makeErrorSourceAccurate({ error, errorSource, nestedUneval })
   }
   return errorSource
 }
@@ -30,3 +33,20 @@ const makeErrorSourceAccurate = ({ error, errorSource, nestedUneval }) => {
   return error
 })(${errorSource})`
 }
+
+const errorToConstructorName = ({ name }) => {
+  if (derivedErrorNameArray.includes(name)) {
+    return name
+  }
+  return "Error"
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#Error_types
+const derivedErrorNameArray = [
+  "EvalError",
+  "RangeError",
+  "ReferenceError",
+  "SyntaxError",
+  "TypeError",
+  "URIError",
+]

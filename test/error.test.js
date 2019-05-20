@@ -35,3 +35,11 @@ assert({ actual: uneval(new RangeError("here")), expected: `RangeError("here")` 
     expected: expectedError,
   })
 }
+
+{
+  const error = new Error()
+  error.name = "AssertionError"
+  const actual = uneval(error)
+  const expected = `Error("")`
+  assert({ actual, expected })
+}
