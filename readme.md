@@ -6,15 +6,11 @@
 
 > Convert a value into a source string
 
-## Installing / Getting started
+## Example
 
-```shell
-npm install @dmail/uneval
-```
+Live browser example: https://dmail.github.io/uneval/#browser-example.
 
-## API
-
-- [api documentation](./doc/api.md)
+Live node example: https://dmail.github.io/uneval/#node-example
 
 ## Licensing
 
