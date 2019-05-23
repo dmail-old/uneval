@@ -1,10 +1,4 @@
 {
-  "editor.formatOnSave": true,
-  "javascript.validate.enable": false,
-  "eslint.autoFixOnSave": false,
-  "editor.codeActionsOnSave": {
-    "source.organizeImports": false
-  },
   "search.exclude": {
     "dist/**": true,
     ".dist/**": true,

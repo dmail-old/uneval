@@ -1,9 +1,8 @@
-/* eslint-disable import/max-dependencies */
 import { valueToType } from "./valueToType.js"
-import { primitiveMap } from "./primitive/index.js"
-import { compositeMap } from "./composite/index.js"
+import { primitiveMap } from "./primitiveMap.js"
+import { compositeMap } from "./compositeMap.js"
 import { unevalConstructor } from "./unevalConstructor.js"
-import { unevalObject } from "./composite/unevalObject.js"
+import { unevalObject } from "./unevalObject.js"
 
 export const uneval = (
   value,

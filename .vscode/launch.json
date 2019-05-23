@@ -15,8 +15,8 @@
       "smartStep": true,
       // https://github.com/Microsoft/vscode-chrome-debug-core/commit/eb552d621f1f6fbebcfca5d2390020dc7d8877e0#diff-b4f13aa3c326d081dea7875f9c0fe84aR31
       "skipFiles": [
+        // force-multiline
         "node_modules/**",
-        // https://github.com/Microsoft/vscode-react-native/issues/620
         "<node_internals>/**/*.js"
       ]
     },
@@ -32,12 +32,11 @@
       "sourceMapPathOverrides": {
         "/*": "${workspaceRoot}/*"
       },
-      // "smartStep": true,
+      "smartStep": true,
       "skipFiles": [
+        // force-multiline
         "node_modules/**",
-        // https://github.com/Microsoft/vscode-react-native/issues/620
         "<node_internals>/**/*.js"
-        // "script/run-node.js"
       ]
     },
     {
@@ -61,22 +60,6 @@
         "/*": "${workspaceRoot}/*"
       },
       "smartStep": true,
-      "skipFiles": [
-        "node_modules/**",
-        // https://github.com/Microsoft/vscode-react-native/issues/620
-        "<node_internals>/**/*.js"
-      ]
-    },
-    {
-      "name": "jsenv-node-attach-child",
-      "type": "node",
-      "request": "attach",
-      "port": 40010,
-      "smartStep": true,
-      "sourceMaps": true,
-      "sourceMapPathOverrides": {
-        "/*": "${workspaceRoot}/*"
-      },
       "skipFiles": [
         "node_modules/**",
         // https://github.com/Microsoft/vscode-react-native/issues/620

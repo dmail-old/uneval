@@ -1,16 +1,16 @@
-const { babelConfigMap } = require("./node_modules/@jsenv/babel-config-map/index.js")
+const { launchNode, launchChromium } = require("@jsenv/core")
 
-try {
-  const importMap = require("./importMap.json")
-  exports.importMap = importMap
-} catch (e) {
-  exports.importMap = {}
+const projectPath = __dirname
+exports.projectPath = projectPath
+
+const testDescription = {
+  "/test/**/*.test.js": {
+    browser: {
+      launch: launchChromium,
+    },
+    node: {
+      launch: launchNode,
+    },
+  },
 }
-
-const projectFolder = __dirname
-exports.projectFolder = projectFolder
-
-const compileInto = ".dist"
-exports.compileInto = compileInto
-
-exports.babelConfigMap = babelConfigMap
+exports.testDescription = testDescription

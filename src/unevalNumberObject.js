@@ -1,4 +1,4 @@
-import { unevalConstructor } from "../unevalConstructor.js"
+import { unevalConstructor } from "./unevalConstructor.js"
 
 export const unevalNumberObject = (value, { nestedUneval, useNew, parenthesis }) => {
   const numberSource = nestedUneval(value.valueOf())

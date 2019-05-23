@@ -1,5 +1,5 @@
-import { preNewLineAndIndentation, wrapNewLineAndIndentation } from "../util.js"
-import { unevalConstructor } from "../unevalConstructor.js"
+import { preNewLineAndIndentation, wrapNewLineAndIndentation } from "./util.js"
+import { unevalConstructor } from "./unevalConstructor.js"
 
 export const unevalArray = (
   value,
