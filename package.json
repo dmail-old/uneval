@@ -1,6 +1,6 @@
 {
 	"name": "@dmail/uneval",
-	"version": "4.9.0",
+	"version": "4.9.1",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
@@ -10,8 +10,8 @@
 		"access": "public"
 	},
 	"module": "index.js",
-	"browser": "dist/browser/main.js",
-	"main": "dist/node/main.js",
+	"browser": "dist/global/main.js",
+	"main": "dist/commonjs/main.js",
 	"files": [
 		"/index.js",
 		"/src/",
@@ -19,14 +19,14 @@
 	],
 	"dependencies": {},
 	"devDependencies": {
-		"@jsenv/core": "5.43.0",
+		"@jsenv/core": "5.48.0",
 		"@jsenv/eslint-config": "8.0.0",
 		"@jsenv/eslint-import-resolver": "4.6.0",
 		"@jsenv/prettier-config": "1.0.0",
 		"@jsenv/prettier-check-project": "2.3.0",
 		"@jsenv/codecov-upload": "1.6.0",
 		"@jsenv/node-module-import-map": "1.5.0",
-		"@dmail/assert": "3.6.0",
+		"@dmail/assert": "3.7.0",
 		"babel-eslint": "11.0.0-beta.0",
 		"prettier": "1.16.3",
 		"eslint": "5.1.0",
@@ -41,9 +41,9 @@
 		"prettier-check-project": "node ./script/prettier-check-project/prettier-check-project.js",
 		"generate-coverage": "node ./script/generate-coverage/generate-coverage.js",
 		"upload-coverage": "node ./script/upload-coverage/upload-coverage.js",
-		"dist": "npm run clean && npm run bundle-browser && npm run bundle-node",
-		"bundle-browser": "node ./script/bundle-browser/bundle-browser.js",
-		"bundle-node": "node ./script/bundle-node/bundle-node.js",
+		"dist": "npm run clean && npm run generate-global-bundle && npm run generate-commonjs-bundle",
+		"generate-global-bundle": "node ./script/generate-global-bundle/generate-global-bundle.js",
+		"generate-commonjs-bundle": "node ./script/generate-commonjs-bundle/generate-commonjs-bundle.js",
 		"clean": "rimraf dist && rimraf coverage",
 		"reinstall": "npm run clean && rimraf node_modules && npm install",
 		"prepublishOnly": "npm run dist"

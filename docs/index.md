@@ -9,7 +9,6 @@
   data-default-tab="js,result"
   data-user="dmail"
   data-slug-hash="YbeYWG"
-  data-preview="true"
   style="height: 360px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;"
   data-pen-title="assert"
 >
