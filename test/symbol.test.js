@@ -1,8 +1,20 @@
 import { assert } from "@dmail/assert"
 import { uneval } from "../index.js"
 
-assert({ actual: uneval(Symbol()), expected: "Symbol()" })
+{
+  const expected = Symbol()
+  const actual = eval(uneval(expected))
+  assert({ actual, expected })
+}
 
-assert({ actual: uneval(Symbol("foo")), expected: `Symbol("foo")` })
+{
+  const expected = Symbol("foo")
+  const actual = eval(uneval(expected))
+  assert({ actual, expected })
+}
 
-assert({ actual: uneval(Symbol(42)), expected: `Symbol("42")` })
+{
+  const expected = Symbol(42)
+  const actual = eval(uneval(expected))
+  assert({ actual, expected })
+}

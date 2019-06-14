@@ -2,21 +2,20 @@ import { assert } from "@dmail/assert"
 import { uneval } from "../index.js"
 
 {
-  const actual = uneval(true)
-  const expected = "true"
+  const expected = true
+  const actual = eval(uneval(expected))
   assert({ actual, expected })
 }
 
-assert({ actual: uneval(false), expected: "false" })
+{
+  const expected = false
+  const actual = eval(uneval(expected))
+  assert({ actual, expected })
+}
 
-/* eslint-disable no-new-wrappers */
-assert({ actual: uneval(new Boolean(true)), expected: "Boolean(true)" })
-
-assert({ actual: uneval(new Boolean(true), { parenthesis: true }), expected: "(Boolean(true))" })
-
-assert({ actual: uneval(new Boolean(true), { useNew: true }), expected: "new Boolean(true)" })
-
-assert({
-  actual: uneval(new Boolean(true), { parenthesis: true, useNew: true }),
-  expected: "new (Boolean(true))",
-})
+{
+  // eslint-disable-next-line no-new-wrappers
+  const expected = new Boolean(true)
+  const actual = eval(uneval(expected))
+  assert({ actual, expected })
+}

@@ -5,10 +5,7 @@ import { uneval } from "../index.js"
   const CustomConstructor = function() {
     this.foo = true
   }
-  const customInstance = new CustomConstructor()
-  const actual = uneval(customInstance)
-  const expected = `CustomConstructor({
-  "foo": true
-})`
+  const expected = new CustomConstructor()
+  const actual = eval(uneval(expected))
   assert({ actual, expected })
 }
