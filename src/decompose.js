@@ -29,58 +29,41 @@ export const decompose = (mainValue) => {
       return identifier
     }
 
-    const recipe = {
-      type: "composite",
-      valueOfIdentifier: undefined,
-      prototypeIdentifier: undefined,
-      propertiesMap: undefined,
-      symbolsMap: undefined,
-    }
-
-    // properties
-    const propertyNames = Object.getOwnPropertyNames(value)
-    if (propertyNames.length > 0) {
-      const propertiesMap = {}
-      Object.getOwnPropertyNames(value).forEach((propertyName) => {
-        const propertyNameIdentifier = valueToIdentifier(propertyName)
-        const propertyDescriptor = Object.getOwnPropertyDescriptor(value, propertyName)
-        const propertyDescription = {}
-        Object.keys(propertyDescriptor).forEach((descriptorName) => {
-          const descriptorNameIdentifier = valueToIdentifier(descriptorName)
-          const descriptorValueIdentifier = valueToIdentifier(propertyDescriptor[descriptorName])
-          propertyDescription[descriptorNameIdentifier] = descriptorValueIdentifier
-        })
-        propertiesMap[propertyNameIdentifier] = propertyDescription
+    const propertiesMap = {}
+    Object.getOwnPropertyNames(value).forEach((propertyName) => {
+      const propertyNameIdentifier = valueToIdentifier(propertyName)
+      const propertyDescriptor = Object.getOwnPropertyDescriptor(value, propertyName)
+      const propertyDescription = {}
+      Object.keys(propertyDescriptor).forEach((descriptorName) => {
+        const descriptorNameIdentifier = valueToIdentifier(descriptorName)
+        const descriptorValueIdentifier = valueToIdentifier(propertyDescriptor[descriptorName])
+        propertyDescription[descriptorNameIdentifier] = descriptorValueIdentifier
       })
-      recipe.propertiesMap = propertiesMap
-    }
+      propertiesMap[propertyNameIdentifier] = propertyDescription
+    })
 
-    // symbols
-    const symbols = Object.getOwnPropertySymbols(value)
-    if (symbols.length > 0) {
-      const symbolsMap = {}
-      symbols.forEach((symbol) => {
-        const symbolIdentifier = valueToIdentifier(symbol)
-        const propertyDescriptor = Object.getOwnPropertyDescriptor(value, symbol)
-        const propertyDescription = {}
-        Object.keys(propertyDescriptor).forEach((descriptorName) => {
-          const descriptorNameIdentifier = valueToIdentifier(descriptorName)
-          const descriptorValueIdentifier = valueToIdentifier(propertyDescriptor[descriptorName])
-          propertyDescription[descriptorNameIdentifier] = descriptorValueIdentifier
-        })
-        symbolsMap[symbolIdentifier] = propertyDescription
+    const symbolsMap = {}
+    Object.getOwnPropertySymbols(value).forEach((symbol) => {
+      const symbolIdentifier = valueToIdentifier(symbol)
+      const propertyDescriptor = Object.getOwnPropertyDescriptor(value, symbol)
+      const propertyDescription = {}
+      Object.keys(propertyDescriptor).forEach((descriptorName) => {
+        const descriptorNameIdentifier = valueToIdentifier(descriptorName)
+        const descriptorValueIdentifier = valueToIdentifier(propertyDescriptor[descriptorName])
+        propertyDescription[descriptorNameIdentifier] = descriptorValueIdentifier
       })
-      recipe.symbolsMap = symbolsMap
-    }
+      symbolsMap[symbolIdentifier] = propertyDescription
+    })
 
     // valueOf, mandatory to uneval new Date(10) for instance.
+    let valueOfIdentifier
     if ("valueOf" in value && typeof value.valueOf === "function") {
       const valueOfReturnValue = value.valueOf()
       if (isComposite(valueOfReturnValue)) {
         if (valueOfReturnValue !== value)
           throw new Error(createUnexpectedValueOfReturnValueErrorMessage())
       } else {
-        recipe.valueOfIdentifier = valueToIdentifier(valueOfReturnValue)
+        valueOfIdentifier = valueToIdentifier(valueOfReturnValue)
       }
     }
 
@@ -91,8 +74,8 @@ export const decompose = (mainValue) => {
       if (prototypeValue === null) return valueToIdentifier(prototypeValue)
 
       // prototype found somewhere already
-      const prototypeIndex = values.indexOf(prototypeValue)
-      if (prototypeIndex > -1) return prototypeIndex
+      const prototypeExistingIdentifier = identifierForComposite(prototypeValue)
+      if (prototypeExistingIdentifier !== undefined) return prototypeExistingIdentifier
 
       // make prototype as visited
       const prototypeIdentifier = nextIdentifier(prototypeValue)
@@ -107,13 +90,17 @@ export const decompose = (mainValue) => {
       // otheriwse prototype is unexpected
       throw new Error(createUnexpectedPrototypeErrorMessage({ prototypeValue }))
     }
-    recipe.prototypeIdentifier = prototypeValueToIdentifier(Object.getPrototypeOf(value))
+    const prototypeIdentifier = prototypeValueToIdentifier(Object.getPrototypeOf(value))
 
-    if (!Object.isExtensible(value)) {
-      recipe.extensible = false
-    }
+    const extensible = Object.isExtensible(value)
 
-    recipes[identifier] = recipe
+    recipes[identifier] = createCompositeRecipe({
+      propertiesMap,
+      symbolsMap,
+      valueOfIdentifier,
+      prototypeIdentifier,
+      extensible,
+    })
     return identifier
   }
 
@@ -148,27 +135,23 @@ export const decompose = (mainValue) => {
 const primitiveToRecipe = (value) => {
   if (typeof value === "symbol") return symbolToRecipe(value)
 
-  return {
-    type: "primitive",
-    value,
-  }
+  return createPimitiveRecipe(value)
 }
 
 const symbolToRecipe = (symbol) => {
   const globalSymbolKey = Symbol.keyFor(symbol)
-  if (globalSymbolKey !== undefined) {
-    return {
-      type: "global-symbol",
-      key: globalSymbolKey,
-    }
-  }
+  if (globalSymbolKey !== undefined) return createGlobalSymbolRecipe(globalSymbolKey)
 
   const symbolGlobalPath = getPrimitiveGlobalPath(symbol)
   if (!symbolGlobalPath) throw new Error(createUnexpectedSymbolErrorMessage({ symbol }))
 
+  return createGlobalReferenceRecipe(symbolGlobalPath)
+}
+
+const createPimitiveRecipe = (value) => {
   return {
-    type: "global-reference",
-    globalPath: symbolGlobalPath,
+    type: "primitive",
+    value,
   }
 }
 
@@ -178,6 +161,30 @@ const createGlobalReferenceRecipe = (globalPath) => {
     globalPath,
   }
   return recipe
+}
+
+const createGlobalSymbolRecipe = (key) => {
+  return {
+    type: "global-symbol",
+    key,
+  }
+}
+
+const createCompositeRecipe = ({
+  propertiesMap,
+  symbolsMap,
+  valueOfIdentifier,
+  prototypeIdentifier,
+  extensible,
+}) => {
+  return {
+    type: "composite",
+    propertiesMap,
+    symbolsMap,
+    valueOfIdentifier,
+    prototypeIdentifier,
+    extensible,
+  }
 }
 
 const createUnexpectedValueOfReturnValueErrorMessage = () =>
