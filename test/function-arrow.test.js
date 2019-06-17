@@ -3,14 +3,10 @@ import { uneval } from "../index.js"
 
 {
   const expected = () => {}
-  const actual = eval(uneval(expected))
-  assert({ actual, expected })
-}
-
-{
-  const expected = {
-    function: () => {},
+  try {
+    uneval(expected)
+    throw new Error("should throw")
+  } catch (e) {
+    assert({ actual: e, expected: new Error("uneval does not accepts function") })
   }
-  const actual = eval(uneval(expected))
-  assert({ actual, expected })
 }

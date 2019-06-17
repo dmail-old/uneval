@@ -8,7 +8,7 @@ export const getCompositeGlobalPath = (value) => compositeWellKnownMap.get(value
 
 export const getPrimitiveGlobalPath = (value) => primitiveWellKnownMap.get(value)
 
-const addWellKnownComposite = (value, name) => {
+const visitGlobalObject = (value) => {
   const visitValue = (value, path) => {
     if (isComposite(value)) {
       if (compositeWellKnownMap.has(value)) return // prevent infinite recursion
@@ -40,12 +40,9 @@ const addWellKnownComposite = (value, name) => {
     return
   }
 
-  visitValue(value, [name])
+  visitValue(value, [])
 }
 
-if (typeof global === "object") {
-  addWellKnownComposite(global, "global")
-}
-if (typeof window === "object") {
-  addWellKnownComposite(window, "window")
-}
+if (typeof window === "object") visitGlobalObject(window)
+
+if (typeof global === "object") visitGlobalObject(global)
