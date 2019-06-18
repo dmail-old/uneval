@@ -6,7 +6,7 @@
 import { isComposite } from "./is-composite.js"
 import { getCompositeGlobalPath, getPrimitiveGlobalPath } from "./global-value-path.js"
 
-export const decompose = (mainValue) => {
+export const decompose = (mainValue, { functionAllowed }) => {
   const valueMap = {}
   const recipeArray = []
 
@@ -17,6 +17,18 @@ export const decompose = (mainValue) => {
       const identifier = identifierForNewValue(value)
       recipeArray[identifier] = primitiveToRecipe(value)
       return identifier
+    }
+
+    if (typeof value === "function") {
+      if (!functionAllowed) throw new Error(createForbiddenFunctionErrorMessage({ path }))
+      // when allowed, the function source should be stored
+      // as we do for regex for instance.
+      // the idea it to avoid having to do new Function on every function
+      // the function source will be stored like for the regex
+      // it means a composite which is a function
+      // doesn't have to do something like Object.create or new Function
+      // it will start from the valueOfIdentifier that is already a composite
+      // (we could do that for regex too by the way)
     }
 
     const existingIdentifier = identifierForComposite(value)
@@ -231,6 +243,13 @@ const createCompositeRecipe = ({
     symbolsDescription,
     extensible,
   }
+}
+
+const createForbiddenFunctionErrorMessage = ({ path }) => {
+  if (path.length === 0) return `function are not allowed.`
+
+  return `function are not allowed.
+function found at: ${path.join(",")}`
 }
 
 const createUnexpectedValueOfReturnValueErrorMessage = () =>

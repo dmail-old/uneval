@@ -10,8 +10,8 @@ import { minifyRecipe } from "./minify-recipe.js"
 import { recompose } from "./recompose.js"
 import { escapeString } from "./escapeString.js"
 
-export const uneval = (value) => {
-  const composition = decompose(value)
+export const uneval = (value, { functionAllowed = false } = {}) => {
+  const composition = decompose(value, { functionAllowed })
   const recipe = compositionToRecipe(composition)
   const recipeMinified = minifyRecipe(recipe)
   const recomposeSource = recompose.toString()

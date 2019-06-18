@@ -7,7 +7,7 @@ import { uneval } from "../index.js"
     uneval(value)
     throw new Error("should throw")
   } catch (actual) {
-    const expected = new Error("uneval does not accepts function")
+    const expected = new Error("function are not allowed.")
     assert({ actual, expected })
   }
 }
