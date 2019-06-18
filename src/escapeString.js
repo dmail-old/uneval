@@ -1,6 +1,6 @@
 // https://github.com/joliss/js-string-escape/blob/master/index.js
 // http://javascript.crockford.com/remedial.html
-export const quote = (value) => {
+export const escapeString = (value) => {
   const string = String(value)
   let i = 0
   const j = string.length

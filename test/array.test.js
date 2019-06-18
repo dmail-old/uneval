@@ -2,26 +2,30 @@ import { assert } from "@dmail/assert"
 import { uneval } from "../index.js"
 
 {
-  const expected = []
-  const actual = eval(uneval(actual))
+  const value = []
+  const actual = eval(uneval(value))
+  const expected = value
   assert({ actual, expected })
 }
 
 {
-  const expected = [[]]
-  const actual = eval(uneval(expected))
+  const value = [[]]
+  const actual = eval(uneval(value))
+  const expected = value
   assert({ actual, expected })
 }
 
 {
-  const expected = Array(3)
-  const actual = eval(uneval(expected))
+  const value = Array(3)
+  const actual = eval(uneval(value))
+  const expected = value
   assert({ actual, expected })
 }
 
 {
-  const expected = [Symbol()]
-  const actual = eval(uneval(expected))
+  const value = [Symbol.iterator]
+  const actual = eval(uneval(value))
+  const expected = value
   assert({
     actual,
     expected,
@@ -30,8 +34,9 @@ import { uneval } from "../index.js"
 
 {
   // eslint-disable-next-line no-array-constructor
-  const expected = new Array("foo", 1)
-  const actual = eval(uneval(expected))
+  const value = new Array("foo", 1)
+  const actual = eval(uneval(value))
+  const expected = value
   assert({
     actual,
     expected,
@@ -39,9 +44,10 @@ import { uneval } from "../index.js"
 }
 
 {
-  const expected = []
-  expected.push(expected)
-  const actual = eval(uneval(expected))
+  const value = []
+  value.push(value)
+  const actual = eval(uneval(value))
+  const expected = value
   assert({
     actual,
     expected,

@@ -1,70 +1,99 @@
-export const recompose = ({ recipes, mainIdentifier }) => {
-  const values = {}
+export const recompose = ({ recipeArray, mainIdentifier }) => {
   const globalObject = typeof window === "object" ? window : global
+  const materials = {}
 
-  const followRecipe = (recipe) => {
-    if (recipe.type === "primitive") return followPrimitiveRecipe(recipe)
-    if (recipe.type === "global-symbol") return followGlobalSymbolRecipe(recipe)
-    if (recipe.type === "global-reference") return followGlobalReferenceRecipe(recipe)
-    return followCompositeRecipe(recipe, recipes)
+  const setupMaterial = (recipe) => {
+    if (recipe.type === "primitive") return setupPrimitiveMaterial(recipe)
+    if (recipe.type === "global-symbol") return setupGlobalSymbolMaterial(recipe)
+    if (recipe.type === "global-reference") return setupGlobalReferenceMaterial(recipe)
+    return setupCompositeMaterial(recipe)
   }
 
-  const followPrimitiveRecipe = ({ value }) => value
+  const setupPrimitiveMaterial = ({ value }) => value
 
-  const followGlobalSymbolRecipe = ({ key }) => Symbol.for(key)
+  const setupGlobalSymbolMaterial = ({ key }) => Symbol.for(key)
 
-  const followGlobalReferenceRecipe = ({ globalPath }) => {
+  const setupGlobalReferenceMaterial = ({ path }) => {
     let currentValue = globalObject
     let i = 0
-    while (i < globalPath.length) {
-      const part = globalPath[i]
+    while (i < path.length) {
+      const part = path[i]
       i++
-      if (part in currentValue === false) return undefined
+      if (part in currentValue === false)
+        throw new Error(createValueNotFoundErrorMessage({ path, index: i }))
       currentValue = currentValue[part]
     }
     return currentValue
   }
 
-  const followCompositeRecipe = ({
-    prototypeIdentifier,
-    propertiesMap,
-    symbolsMap,
-    extensible,
-  }) => {
-    const prototypeValue = values[prototypeIdentifier]
-    const composite = Object.create(prototypeValue)
+  const setupCompositeMaterial = ({ prototypeIdentifier, valueOfIdentifier }) => {
+    const prototypeValue = materials[prototypeIdentifier]
+    if (prototypeValue === null) return Object.create(null)
 
-    Object.keys(propertiesMap).forEach((propertyNameIdentifier) => {
-      const propertyName = values[propertyNameIdentifier]
-      const description = propertiesMap[propertyNameIdentifier]
-      Object.defineProperty(composite, propertyName, producePropertyDescriptor(description))
-    })
+    const Constructor = prototypeValue.constructor
+    if (Constructor === Object) return Object.create(prototypeValue)
 
-    Object.keys(symbolsMap).forEach((symbolIdentifier) => {
-      const symbol = values[symbolIdentifier]
-      const description = propertiesMap[symbolIdentifier]
-      Object.defineProperty(composite, symbol, producePropertyDescriptor(description))
-    })
+    if (valueOfIdentifier === undefined) return new Constructor()
 
-    if (!extensible) Object.preventExtensions(composite)
-
-    return composite
+    const valueOfValue = materials[valueOfIdentifier]
+    return new Constructor(valueOfValue)
   }
 
-  const producePropertyDescriptor = (description) => {
-    const descriptor = {}
-    Object.keys(description).forEach((descriptorNameIdentifier) => {
-      const descriptorName = values[descriptorNameIdentifier]
-      const descriptorValueIdentifier = description[descriptorNameIdentifier]
-      descriptor[descriptorName] = descriptorValueIdentifier
-    })
-    return descriptor
-  }
-
-  recipes.forEach((recipe, index) => {
-    const value = followRecipe(recipe, recipes)
-    values[index] = value
+  recipeArray.forEach((recipe, index) => {
+    const value = setupMaterial(recipe)
+    materials[index] = value
   })
 
-  return values[mainIdentifier]
+  const followRecipe = (recipe, index) => {
+    if (recipe.type === "composite") followCompositeRecipe(recipe, index)
+  }
+
+  const followCompositeRecipe = (
+    { propertiesDescription, symbolsDescription, extensible = true },
+    index,
+  ) => {
+    const composite = materials[index]
+
+    if (propertiesDescription) {
+      Object.keys(propertiesDescription).forEach((propertyNameIdentifier) => {
+        const propertyName = materials[propertyNameIdentifier]
+        const description = propertiesDescription[propertyNameIdentifier]
+        defineProperty(composite, propertyName, description)
+      })
+    }
+
+    if (symbolsDescription) {
+      Object.keys(symbolsDescription).forEach((symbolIdentifier) => {
+        const symbol = materials[symbolIdentifier]
+        const description = symbolsDescription[symbolIdentifier]
+        defineProperty(composite, symbol, description)
+      })
+    }
+
+    if (!extensible) Object.preventExtensions(composite)
+  }
+
+  const defineProperty = (composite, propertyNameOrSymbol, propertyDescription) => {
+    const currentDescriptor = Object.getOwnPropertyDescriptor(composite, propertyNameOrSymbol)
+    if (currentDescriptor && currentDescriptor.configurable === false) return
+
+    const descriptor = {}
+    Object.keys(propertyDescription).forEach((descriptorNameIdentifier) => {
+      const descriptorValueIdentifier = propertyDescription[descriptorNameIdentifier]
+      const descriptorName = materials[descriptorNameIdentifier]
+      const descriptorValue = materials[descriptorValueIdentifier]
+      descriptor[descriptorName] = descriptorValue
+    })
+    Object.defineProperty(composite, propertyNameOrSymbol, descriptor)
+  }
+
+  recipeArray.forEach((recipe, index) => {
+    followRecipe(recipe, index)
+  })
+
+  const createValueNotFoundErrorMessage = ({ path, index }) => `value not found for path.
+part not found: ${path[index]}
+path: ${path.join(",")}`
+
+  return materials[mainIdentifier]
 }

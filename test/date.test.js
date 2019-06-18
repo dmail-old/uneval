@@ -2,13 +2,15 @@ import { assert } from "@dmail/assert"
 import { uneval } from "../index.js"
 
 {
-  const expected = new Date(10)
-  const actual = eval(uneval(expected))
+  const value = new Date()
+  const actual = eval(uneval(value))
+  const expected = value
   assert({ actual, expected })
 }
 
 {
-  const expected = new Date()
-  const actual = eval(uneval(expected))
+  const value = new Date(10)
+  const actual = eval(uneval(value))
+  const expected = value
   assert({ actual, expected })
 }

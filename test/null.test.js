@@ -1,8 +1,9 @@
 import { assert } from "@dmail/assert"
 import { uneval } from "../index.js"
 
-const expected = null
-const actual = eval(uneval(expected))
+const value = null
+const actual = eval(uneval(value))
+const expected = value
 assert({
   actual,
   expected,

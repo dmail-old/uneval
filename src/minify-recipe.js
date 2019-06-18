@@ -2,6 +2,6 @@
 // for instance we'll consider extensible as false by default
 // empty propertiesMap and symbolsMap can be omitted
 // it would decrease the size of value string representation a bit
-export const minifyRecipes = (recipes) => {
-  return recipes
+export const minifyRecipe = (recipe) => {
+  return recipe
 }

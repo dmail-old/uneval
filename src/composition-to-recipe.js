@@ -1,22 +1,22 @@
-// be carefull for now this function is mutating recipe
-// array!!!
-// this is not an issue because it is used only by uneval on a recipes
-// array of recipe which not accessible from outisde
-export const sortRecipes = (recipes) => {
+// be carefull because this function is mutating recipe objects inside the recipeArray.
+// this is not an issue because each recipe object is not accessible from the outside
+// when used internally by uneval
+export const compositionToRecipe = ({ recipeArray, mainIdentifier }) => {
   const findInRecipePrototypeChain = (recipe, callback) => {
     let currentRecipe = recipe
     // eslint-disable-next-line no-constant-condition
     while (true) {
       if (currentRecipe.type !== "composite") break
       const prototypeIdentifier = currentRecipe.prototypeIdentifier
-      currentRecipe = recipes[prototypeIdentifier]
+      currentRecipe = recipeArray[prototypeIdentifier]
 
       if (callback(currentRecipe, prototypeIdentifier)) return prototypeIdentifier
     }
     return undefined
   }
 
-  const recipesSorted = recipes.slice().sort((leftRecipe, rightRecipe) => {
+  const recipeArrayOrdered = recipeArray.slice()
+  recipeArrayOrdered.sort((leftRecipe, rightRecipe) => {
     const leftType = leftRecipe.type
     const rightType = rightRecipe.type
 
@@ -34,8 +34,6 @@ export const sortRecipes = (recipes) => {
       )
       // if right recipe requires left recipe, right must be after left
       if (leftRecipeIsInRightRecipePrototypeChain) return -1
-
-      return 0
     }
 
     if (leftType !== rightType) {
@@ -43,19 +41,21 @@ export const sortRecipes = (recipes) => {
       if (leftType === "composite") return 1
       // if right is a composite, right must be after left
       if (rightType === "composite") return -1
-      // other types are independant
-      return 0
     }
 
-    // other types are independant
-    return 0
+    const leftIndex = recipeArray.indexOf(leftRecipe)
+    const rightIndex = recipeArray.indexOf(rightRecipe)
+    // left was before right, don't change that
+    if (leftIndex < rightIndex) return -1
+    // right was after left, don't change that
+    return 1
   })
 
   const moves = {}
-  recipes.forEach((recipe, index) => {
-    const sortedIndex = recipesSorted.indexOf(recipe)
-    if (index !== sortedIndex) {
-      moves[index] = sortedIndex
+  recipeArray.forEach((recipe, index) => {
+    const indexOrdered = recipeArrayOrdered.indexOf(recipe)
+    if (index !== indexOrdered) {
+      moves[index] = indexOrdered
     }
   })
 
@@ -74,30 +74,30 @@ export const sortRecipes = (recipes) => {
     return remappedPropertyDescription
   }
 
-  recipes.forEach((recipe) => {
+  recipeArrayOrdered.forEach((recipe) => {
     if (recipe.type !== "composite") return
 
     recipe.valueOfIdentifier = remapIdentifier(recipe.valueOfIdentifier)
     recipe.prototypeIdentifier = remapIdentifier(recipe.prototypeIdentifier)
 
-    const propertiesMap = recipe.propertiesMap
-    const remappedPropertiesMap = {}
-    Object.keys(propertiesMap).forEach((propertyNameIdentifier) => {
-      remappedPropertiesMap[remapIdentifier(propertyNameIdentifier)] = remapPropertyDescription(
-        propertiesMap[propertyNameIdentifier],
-      )
+    const propertiesDescription = recipe.propertiesDescription
+    const remappedPropertiesDescription = {}
+    Object.keys(propertiesDescription).forEach((propertyNameIdentifier) => {
+      remappedPropertiesDescription[
+        remapIdentifier(propertyNameIdentifier)
+      ] = remapPropertyDescription(propertiesDescription[propertyNameIdentifier])
     })
-    recipe.propertiesMap = remappedPropertiesMap
+    recipe.propertiesDescription = remappedPropertiesDescription
 
-    const symbolsMap = recipe.symbolsMap
-    const remappedSymbolsMap = {}
-    Object.keys(symbolsMap).forEach((symbolIdentifier) => {
-      remappedSymbolsMap[remapIdentifier(symbolIdentifier)] = remapPropertyDescription(
-        symbolsMap[symbolIdentifier],
+    const symbolsDescription = recipe.symbolsDescription
+    const remappedSymbolsDescription = {}
+    Object.keys(symbolsDescription).forEach((symbolIdentifier) => {
+      remappedSymbolsDescription[remapIdentifier(symbolIdentifier)] = remapPropertyDescription(
+        symbolsDescription[symbolIdentifier],
       )
     })
-    recipe.symbolsMap = remappedSymbolsMap
+    recipe.symbolsDescription = remappedSymbolsDescription
   })
 
-  return recipesSorted
+  return { recipeArray: recipeArrayOrdered, mainIdentifier: remapIdentifier(mainIdentifier) }
 }

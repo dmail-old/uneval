@@ -2,13 +2,15 @@ import { assert } from "@dmail/assert"
 import { uneval } from "../index.js"
 
 {
-  const expected = /ok/g
-  const actual = eval(uneval(expected))
+  const value = /ok/g
+  const actual = eval(uneval(value))
+  const expected = value
   assert({ actual, expected })
 }
 
 {
-  const expected = new RegExp("foo", "g")
-  const actual = eval(uneval(expected))
+  const value = new RegExp("foo", "g")
+  const actual = eval(uneval(value))
+  const expected = value
   assert({ actual, expected })
 }
