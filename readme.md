@@ -73,8 +73,36 @@ JSON.stringify(["very-long-string", "very-long-string"]) ===
 JSON.stringify(Object.defineProperty({}, "foo", { enumerable: false })) === "{}"
 ```
 
-## Example
+## How to use
 
-Live browser example: https://dmail.github.io/uneval/#browser-example.
+```shell
+npm install --save-dev @dmail/uneval
+```
 
-Live node example: https://dmail.github.io/uneval/#node-example
+See browser and node examples below.
+
+### browser example
+
+```html
+<script src="https://unpkg.com/@dmail/uneval@5.3.0/dist/global/main.js"></script>
+<script>
+  const { uneval } = window.__dmail_uneval__
+  console.log(eval(uneval({ answer: 42 })))
+</script>
+```
+
+### node example
+
+```js
+const { uneval } = require("@dmail/uneval")
+
+console.log(eval(uneval({ answer: 42 })))
+```
+
+## Interactive browser example
+
+— see https://dmail.github.io/uneval/browser-example.
+
+## Interactive node example
+
+— see https://dmail.github.io/uneval/node-example
