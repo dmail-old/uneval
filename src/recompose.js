@@ -1,8 +1,19 @@
 export function recompose(param) {
   var recipeArray = param.recipeArray
   var mainIdentifier = param.mainIdentifier
-  var globalObject = typeof window === "object" ? window : global
   var materials = {}
+
+  // eslint-disable-next-line no-extend-native
+  Object.defineProperty(Object.prototype, "__global__", {
+    // eslint-disable-next-line object-shorthand
+    get: function() {
+      return this
+    },
+    configurable: true,
+  })
+  // eslint-disable-next-line no-undef
+  var globalObject = __global__
+  delete Object.prototype.__global__
 
   function setupMaterial(recipe) {
     if (recipe.type === "primitive") return setupPrimitiveMaterial(recipe)
