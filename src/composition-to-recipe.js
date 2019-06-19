@@ -8,6 +8,7 @@ export const compositionToRecipe = ({ recipeArray, mainIdentifier }) => {
     while (true) {
       if (currentRecipe.type !== "composite") break
       const prototypeIdentifier = currentRecipe.prototypeIdentifier
+      if (prototypeIdentifier === undefined) break
       currentRecipe = recipeArray[prototypeIdentifier]
 
       if (callback(currentRecipe, prototypeIdentifier)) return prototypeIdentifier
@@ -97,6 +98,17 @@ export const compositionToRecipe = ({ recipeArray, mainIdentifier }) => {
       )
     })
     recipe.symbolsDescription = remappedSymbolsDescription
+
+    const methodsDescription = recipe.methodsDescription
+    const remappedMethodsDescription = {}
+    Object.keys(methodsDescription).forEach((methodNameIdentifier) => {
+      const callsDescription = methodsDescription[methodNameIdentifier]
+      const remappedCallsDescription = callsDescription.map((argumentIdentifiers) => {
+        return argumentIdentifiers.map((argumentIdentifier) => remapIdentifier(argumentIdentifier))
+      })
+      remappedMethodsDescription[remapIdentifier(methodNameIdentifier)] = remappedCallsDescription
+    })
+    recipe.methodsDescription = remappedMethodsDescription
   })
 
   return { recipeArray: recipeArrayOrdered, mainIdentifier: remapIdentifier(mainIdentifier) }

@@ -19,17 +19,14 @@ export const decompose = (mainValue, { functionAllowed }) => {
       return identifier
     }
 
-    if (typeof value === "function") {
-      if (!functionAllowed) throw new Error(createForbiddenFunctionErrorMessage({ path }))
-      // when allowed, the function source should be stored
-      // as we do for regex for instance.
-      // the idea it to avoid having to do new Function on every function
-      // the function source will be stored like for the regex
-      // it means a composite which is a function
-      // doesn't have to do something like Object.create or new Function
-      // it will start from the valueOfIdentifier that is already a composite
-      // (we could do that for regex too by the way)
-    }
+    if (typeof Promise === "function" && value instanceof Promise)
+      throw new Error(createPromiseAreNotSupportedMessage({ path }))
+    if (typeof WeakSet === "function" && value instanceof WeakSet)
+      throw new Error(createWeakSetAreNotSupportedMessage({ path }))
+    if (typeof WeakMap === "function" && value instanceof WeakMap)
+      throw new Error(createWeakMapAreNotSupportedMessage({ path }))
+    if (typeof value === "function" && !functionAllowed)
+      throw new Error(createForbiddenFunctionMessage({ path }))
 
     const existingIdentifier = identifierForComposite(value)
     if (existingIdentifier !== undefined) return existingIdentifier
@@ -46,16 +43,22 @@ export const decompose = (mainValue, { functionAllowed }) => {
       const propertyDescriptor = Object.getOwnPropertyDescriptor(value, propertyName)
       const propertyDescription = {}
       Object.keys(propertyDescriptor).forEach((descriptorName) => {
+        const descriptorValue = propertyDescriptor[descriptorName]
+
+        if (descriptorName === "set" && descriptorValue && !functionAllowed)
+          throw new Error(createForbiddenPropertySetterMessage({ path, propertyName }))
+        if (descriptorName === "get" && descriptorValue && !functionAllowed)
+          throw new Error(createForbiddenPropertyGetterMessage({ path, propertyName }))
+
         const descriptorNameIdentifier = valueToIdentifier(descriptorName, [
           ...path,
-          propertyName,
-          `[[${descriptorName}]]`,
+          `["${propertyName}"]`,
+          `[[propertyDescriptor:${descriptorName}]]`,
         ])
-        const descriptorValueIdentifier = valueToIdentifier(propertyDescriptor[descriptorName], [
+        const descriptorValueIdentifier = valueToIdentifier(descriptorValue, [
           ...path,
-          propertyName,
-          `[[${descriptorName}]]`,
-          "value",
+          `["${propertyName}"]`,
+          `[[propertyDescriptor:${descriptorName}]]`,
         ])
         propertyDescription[descriptorNameIdentifier] = descriptorValueIdentifier
       })
@@ -70,14 +73,13 @@ export const decompose = (mainValue, { functionAllowed }) => {
       Object.keys(propertyDescriptor).forEach((descriptorName) => {
         const descriptorNameIdentifier = valueToIdentifier(descriptorName, [
           ...path,
-          symbol,
-          `[[${descriptorName}]]`,
+          `[${symbol.toString()}]`,
+          `[[propertyDescriptor:${descriptorName}]]`,
         ])
         const descriptorValueIdentifier = valueToIdentifier(propertyDescriptor[descriptorName], [
           ...path,
-          symbol,
-          `[[${descriptorName}]]`,
-          "value",
+          `[${symbol.toString()}]`,
+          `[[propertyDescriptor:${descriptorName}]]`,
         ])
         propertyDescription[descriptorNameIdentifier] = descriptorValueIdentifier
       })
@@ -85,43 +87,54 @@ export const decompose = (mainValue, { functionAllowed }) => {
       symbolsDescription[symbolIdentifier] = propertyDescription
     })
 
-    // valueOf, mandatory to uneval new Date(10) for instance.
-    const valueOfIdentifier = identifierForValueOfReturnValue(value, path)
+    const methodsDescription = computeMethodsDescription(value, path)
 
     const extensible = Object.isExtensible(value)
 
     recipeArray[identifier] = createCompositeRecipe({
-      valueOfIdentifier,
       propertiesDescription,
       symbolsDescription,
+      methodsDescription,
       extensible,
     })
     return identifier
   }
 
-  const identifierForValueOfReturnValue = (value, path) => {
-    if (value instanceof RegExp) {
-      const valueOfIdentifier = nextIdentifier()
-      recipeArray[valueOfIdentifier] = {
-        type: "primitive",
-        value,
-      }
-      return valueOfIdentifier
+  const computeMethodsDescription = (value, path) => {
+    const methodsDescription = {}
+
+    if (typeof Set === "function" && value instanceof Set) {
+      const addCallArray = []
+      value.forEach((entryValue, index) => {
+        const entryValueIdentifier = valueToIdentifier(entryValue, [
+          ...path,
+          `[[SetEntryValue]]`,
+          index,
+        ])
+        addCallArray.push([entryValueIdentifier])
+      })
+      methodsDescription[valueToIdentifier("add")] = addCallArray
     }
 
-    if (value instanceof Array) return valueToIdentifier(value.length, [...path, "length"])
+    if (typeof Map === "function" && value instanceof Map) {
+      const setCallArray = []
+      value.forEach((entryValue, entryKey) => {
+        const entryKeyIdentifier = valueToIdentifier(entryKey, [
+          ...path,
+          "[[MapEntryKey]]",
+          entryKey,
+        ])
+        const entryValueIdentifier = valueToIdentifier(entryValue, [
+          ...path,
+          "[[MapEntryValue]]",
+          entryValue,
+        ])
+        setCallArray.push([entryKeyIdentifier, entryValueIdentifier])
+      })
+      methodsDescription[valueToIdentifier("set")] = setCallArray
+    }
 
-    if ("valueOf" in value === false) return undefined
-
-    if (typeof value.valueOf !== "function") return undefined
-
-    const valueOfReturnValue = value.valueOf()
-    if (!isComposite(valueOfReturnValue))
-      return valueToIdentifier(valueOfReturnValue, [...path, "valueOf()"])
-
-    if (valueOfReturnValue === value) return undefined
-
-    throw new Error(createUnexpectedValueOfReturnValueErrorMessage())
+    return methodsDescription
   }
 
   const identifierForPrimitive = (value) => {
@@ -174,12 +187,52 @@ export const decompose = (mainValue, { functionAllowed }) => {
       return prototypeIdentifier
     }
 
-    // otherwise prototype is unexpected
-    throw new Error(createUnexpectedPrototypeErrorMessage({ prototypeValue }))
+    // otherwise prototype is unknown
+    throw new Error(createUnknownPrototypeMessage({ prototypeValue }))
   }
+  const identifierForValueOf = (value, path) => {
+    if (value instanceof Array) return valueToIdentifier(value.length, [...path, "length"])
+
+    if ("valueOf" in value === false) return undefined
+
+    if (typeof value.valueOf !== "function") return undefined
+
+    const valueOfReturnValue = value.valueOf()
+    if (!isComposite(valueOfReturnValue))
+      return valueToIdentifier(valueOfReturnValue, [...path, "valueOf()"])
+
+    if (valueOfReturnValue === value) return undefined
+
+    throw new Error(createUnexpectedValueOfReturnValueMessage())
+  }
+
   recipeArray.slice().forEach((recipe, index) => {
     if (recipe.type === "composite") {
-      const prototypeValue = Object.getPrototypeOf(valueMap[index])
+      const value = valueMap[index]
+
+      if (typeof value === "function") {
+        const valueOfIdentifier = nextIdentifier()
+        recipeArray[valueOfIdentifier] = {
+          type: "primitive",
+          value,
+        }
+        recipe.valueOfIdentifier = valueOfIdentifier
+        return
+      }
+
+      if (value instanceof RegExp) {
+        const valueOfIdentifier = nextIdentifier()
+        recipeArray[valueOfIdentifier] = {
+          type: "primitive",
+          value,
+        }
+        recipe.valueOfIdentifier = valueOfIdentifier
+        return
+      }
+
+      // valueOf, mandatory to uneval new Date(10) for instance.
+      recipe.valueOfIdentifier = identifierForValueOf(value)
+      const prototypeValue = Object.getPrototypeOf(value)
       recipe.prototypeIdentifier = prototypeValueToIdentifier(prototypeValue)
     }
   })
@@ -201,7 +254,7 @@ const symbolToRecipe = (symbol) => {
   if (globalSymbolKey !== undefined) return createGlobalSymbolRecipe(globalSymbolKey)
 
   const symbolGlobalPath = getPrimitiveGlobalPath(symbol)
-  if (!symbolGlobalPath) throw new Error(createUnexpectedSymbolErrorMessage({ symbol }))
+  if (!symbolGlobalPath) throw new Error(createUnknownSymbolMessage({ symbol }))
 
   return createGlobalReferenceRecipe(symbolGlobalPath)
 }
@@ -233,6 +286,7 @@ const createCompositeRecipe = ({
   valueOfIdentifier,
   propertiesDescription,
   symbolsDescription,
+  methodsDescription,
   extensible,
 }) => {
   return {
@@ -241,24 +295,60 @@ const createCompositeRecipe = ({
     valueOfIdentifier,
     propertiesDescription,
     symbolsDescription,
+    methodsDescription,
     extensible,
   }
 }
 
-const createForbiddenFunctionErrorMessage = ({ path }) => {
+const createPromiseAreNotSupportedMessage = ({ path }) => {
+  if (path.length === 0) return `promise are not supported.`
+
+  return `promise are not supported.
+promise found at: ${path.join("")}`
+}
+
+const createWeakSetAreNotSupportedMessage = ({ path }) => {
+  if (path.length === 0) return `weakSet are not supported.`
+
+  return `weakSet are not supported.
+weakSet found at: ${path.join("")}`
+}
+
+const createWeakMapAreNotSupportedMessage = ({ path }) => {
+  if (path.length === 0) return `weakMap are not supported.`
+
+  return `weakMap are not supported.
+weakMap found at: ${path.join("")}`
+}
+
+const createForbiddenFunctionMessage = ({ path }) => {
   if (path.length === 0) return `function are not allowed.`
 
   return `function are not allowed.
-function found at: ${path.join(",")}`
+function found at: ${path.join("")}`
 }
 
-const createUnexpectedValueOfReturnValueErrorMessage = () =>
+const createForbiddenPropertyGetterMessage = ({
+  path,
+  propertyName,
+}) => `property getter are not allowed.
+getter found on property: ${propertyName}
+at: ${path.join("")}`
+
+const createForbiddenPropertySetterMessage = ({
+  path,
+  propertyName,
+}) => `property setter are not allowed.
+setter found on property: ${propertyName}
+at: ${path.join("")}`
+
+const createUnexpectedValueOfReturnValueMessage = () =>
   `valueOf() must return a primitive of the object itself.`
 
-const createUnexpectedSymbolErrorMessage = ({
+const createUnknownSymbolMessage = ({
   symbol,
 }) => `symbol must be global, like Symbol.iterator, or created using Symbol.for().
 symbol: ${symbol.toString()}`
 
-const createUnexpectedPrototypeErrorMessage = () =>
+const createUnknownPrototypeMessage = () =>
   `prototype must be global, like Object.prototype, or somewhere in the value.`

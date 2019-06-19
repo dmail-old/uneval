@@ -27,6 +27,9 @@ export const recompose = ({ recipeArray, mainIdentifier }) => {
   }
 
   const setupCompositeMaterial = ({ prototypeIdentifier, valueOfIdentifier }) => {
+    // regexp and function
+    if (prototypeIdentifier === undefined) return materials[valueOfIdentifier]
+
     const prototypeValue = materials[prototypeIdentifier]
     if (prototypeValue === null) return Object.create(null)
 
@@ -49,7 +52,7 @@ export const recompose = ({ recipeArray, mainIdentifier }) => {
   }
 
   const followCompositeRecipe = (
-    { propertiesDescription, symbolsDescription, extensible = true },
+    { propertiesDescription, symbolsDescription, methodsDescription, extensible = true },
     index,
   ) => {
     const composite = materials[index]
@@ -67,6 +70,19 @@ export const recompose = ({ recipeArray, mainIdentifier }) => {
         const symbol = materials[symbolIdentifier]
         const description = symbolsDescription[symbolIdentifier]
         defineProperty(composite, symbol, description)
+      })
+    }
+
+    if (methodsDescription) {
+      Object.keys(methodsDescription).forEach((methodNameIdentifier) => {
+        const methodName = materials[methodNameIdentifier]
+        const calls = methodsDescription[methodNameIdentifier]
+        calls.forEach((argumentIdentifiers) => {
+          const argumentValues = argumentIdentifiers.map(
+            (argumentIdentifier) => materials[argumentIdentifier],
+          )
+          composite[methodName](...argumentValues)
+        })
       })
     }
 

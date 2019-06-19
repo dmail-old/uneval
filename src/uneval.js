@@ -1,9 +1,3 @@
-/**
- * throw on Promise, Function, getter, setter
- * WeakMap, Map we could restore Map and WeakMap using their methods to collect
- * data inside them and restore them afterwards.
- */
-
 import { decompose } from "./decompose.js"
 import { compositionToRecipe } from "./composition-to-recipe.js"
 import { minifyRecipe } from "./minify-recipe.js"
