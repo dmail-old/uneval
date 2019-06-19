@@ -4,7 +4,7 @@
   class="codepen"
   data-height="360"
   data-theme-id="0"
-  data-default-tab="html"
+  data-default-tab="html,result"
   data-user="dmail"
   data-slug-hash="YbeYWG"
   style="height: 360px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;"
