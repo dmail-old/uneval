@@ -1,6 +1,6 @@
 {
 	"name": "@dmail/uneval",
-	"version": "4.10.0",
+	"version": "5.1.0",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
@@ -19,7 +19,7 @@
 	],
 	"dependencies": {},
 	"devDependencies": {
-		"@jsenv/core": "5.48.0",
+		"@jsenv/core": "5.51.0",
 		"@jsenv/eslint-config": "8.0.0",
 		"@jsenv/eslint-import-resolver": "4.6.0",
 		"@jsenv/prettier-config": "1.0.0",

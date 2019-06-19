@@ -1,54 +1,41 @@
-import { valueToType } from "./valueToType.js"
-import { primitiveMap } from "./primitiveMap.js"
-import { compositeMap } from "./compositeMap.js"
-import { unevalConstructor } from "./unevalConstructor.js"
-import { unevalObject } from "./unevalObject.js"
+import { decompose } from "./decompose.js"
+import { compositionToRecipe } from "./composition-to-recipe.js"
+import { minifyRecipe } from "./minify-recipe.js"
+import { recompose } from "./recompose.js"
+import { escapeString } from "./escapeString.js"
 
-export const uneval = (
-  value,
-  {
-    parenthesis = false,
-    singleQuote = false,
-    useNew = false,
-    objectConstructor = false,
-    compact = false,
-    showFunctionBody = false,
-    indentUsingTab = false,
-    indentSize = 2,
-    accurateErrorProperties = false,
-  } = {},
-) => {
-  const scopedUneval = (scopedValue, scopedOptions) => {
-    const { primitiveType, compositeType } = valueToType(scopedValue)
-    const options = {
-      ...scopedOptions,
-      nestedUneval: (nestedValue, nestedOptions = {}) => {
-        return scopedUneval(nestedValue, {
-          ...scopedOptions,
-          depth: scopedOptions.depth + 1,
-          ...nestedOptions,
-        })
-      },
-    }
-    if (primitiveType) return primitiveMap[primitiveType](scopedValue, options)
-    if (compositeType in compositeMap) return compositeMap[compositeType](scopedValue, options)
+export const uneval = (value, { functionAllowed = false } = {}) => {
+  const composition = decompose(value, { functionAllowed })
+  const recipe = compositionToRecipe(composition)
+  const recipeMinified = minifyRecipe(recipe)
+  const recomposeSource = recompose.toString()
+  const recomposeParamSouce = recipeToSource(recipeMinified)
 
-    return unevalConstructor(`${compositeType}(${unevalObject(scopedValue, options)})`, {
-      ...options,
-      parenthesis: false,
-    })
+  return `(${recomposeSource})(${recomposeParamSouce})`
+}
+
+const recipeToSource = (recipe) => {
+  const valueToSource = (value) => {
+    if (value instanceof Array) return arrayToSource(value)
+    if (value instanceof RegExp) return value.toString()
+    if (value === null) return "null"
+    if (typeof value === "object") return objectToSource(value)
+    if (typeof value === "string") return `"${escapeString(value)}"`
+    if (Object.is(value, -0)) return "-0"
+    return String(value)
   }
 
-  return scopedUneval(value, {
-    parenthesis,
-    singleQuote,
-    useNew,
-    objectConstructor,
-    compact,
-    showFunctionBody,
-    indentUsingTab,
-    indentSize,
-    accurateErrorProperties,
-    depth: 0,
-  })
+  const arrayToSource = (array) => {
+    const valueSourceArray = array.map((value) => valueToSource(value))
+    return `[${valueSourceArray.join(",")}]`
+  }
+
+  const objectToSource = (object) => {
+    const propertiesSources = Object.keys(object).map((key) => {
+      return `"${escapeString(key)}":${valueToSource(object[key])}`
+    })
+    return `{${propertiesSources.join(",")}}`
+  }
+
+  return valueToSource(recipe)
 }

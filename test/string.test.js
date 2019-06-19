@@ -1,38 +1,66 @@
 import { assert } from "@dmail/assert"
 import { uneval } from "../index.js"
 
-assert({ actual: uneval(""), expected: `""` })
+{
+  const value = ""
+  const actual = eval(uneval(value))
+  const expected = value
+  assert({ actual, expected })
+}
 
-assert({ actual: uneval("dam"), expected: `"dam"` })
+{
+  const value = "dam"
+  const actual = eval(uneval(value))
+  const expected = value
+  assert({ actual, expected })
+}
 
-assert({ actual: uneval("don't"), expected: `"don\\\'t"` })
+{
+  const value = "don't"
+  const actual = eval(uneval(value))
+  const expected = value
+  assert({ actual, expected })
+}
 
-assert({ actual: eval(uneval("don't")), expected: "don't" })
+{
+  const value = `his name is "dam"`
+  const actual = eval(uneval(value))
+  const expected = value
+  assert({ actual, expected })
+}
 
-assert({ actual: uneval(`his name is "dam"`), expected: `"his name is \\\"dam\\\""` })
+{
+  const value = "a\nb"
+  const actual = eval(uneval(value))
+  const expected = value
+  assert({ actual, expected })
+}
 
-assert({ actual: uneval("a\nb"), expected: `"a\\nb"` })
+{
+  const value = "a\rb"
+  const actual = eval(uneval(value))
+  const expected = value
+  assert({ actual, expected })
+}
 
-assert({ actual: uneval("a\rb"), expected: `"a\\rb"` })
+{
+  const value = "a\u2028b"
+  const actual = eval(uneval(value))
+  const expected = value
+  assert({ actual, expected })
+}
 
-assert({ actual: uneval("a\u2028b"), expected: `"a\\u2028b"` })
+{
+  const value = "a\u2029b"
+  const actual = eval(uneval(value))
+  const expected = value
+  assert({ actual, expected })
+}
 
-assert({ actual: uneval("a\u2029b"), expected: `"a\\u2029b"` })
-
-assert({
+{
   // eslint-disable-next-line no-new-wrappers
-  actual: uneval(new String("")),
-  expected: `String("")`,
-})
-
-assert({
-  // eslint-disable-next-line no-new-wrappers
-  actual: uneval(new String("dam")),
-  expected: `String("dam")`,
-})
-
-assert({ actual: uneval("dam", { singleQuote: true }), expected: `'dam'` })
-
-assert({ actual: uneval("don't", { singleQuote: true }), expected: `'don\\\'t'` })
-
-assert({ actual: eval(uneval("don't", { singleQuote: true })), expected: "don't" })
+  const value = new String("")
+  const actual = eval(uneval(value))
+  const expected = value
+  assert({ actual, expected })
+}

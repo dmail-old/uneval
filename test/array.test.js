@@ -2,28 +2,30 @@ import { assert } from "@dmail/assert"
 import { uneval } from "../index.js"
 
 {
-  const actual = uneval([])
-  const expected = `[]`
+  const value = []
+  const actual = eval(uneval(value))
+  const expected = value
   assert({ actual, expected })
 }
 
 {
-  const actual = uneval([[]], { compact: true })
-  const expected = `[[]]`
+  const value = [[]]
+  const actual = eval(uneval(value))
+  const expected = value
   assert({ actual, expected })
 }
 
 {
-  const actual = uneval(Array(3), { compact: true })
-  const expected = `[,,]`
+  const value = Array(3)
+  const actual = eval(uneval(value))
+  const expected = value
   assert({ actual, expected })
 }
 
 {
-  const actual = uneval([Symbol()])
-  const expected = `[
-  Symbol()
-]`
+  const value = [Symbol.iterator]
+  const actual = eval(uneval(value))
+  const expected = value
   assert({
     actual,
     expected,
@@ -32,35 +34,20 @@ import { uneval } from "../index.js"
 
 {
   // eslint-disable-next-line no-array-constructor
-  const newArray = new Array("foo", 1)
-
-  {
-    const actual = uneval(newArray)
-    const expected = `[
-  "foo",
-  1
-]`
-    assert({
-      actual,
-      expected,
-    })
-  }
-
-  {
-    const actual = uneval(newArray, { compact: true })
-    const expected = `["foo", 1]`
-    assert({ actual, expected })
-  }
+  const value = new Array("foo", 1)
+  const actual = eval(uneval(value))
+  const expected = value
+  assert({
+    actual,
+    expected,
+  })
 }
 
 {
-  const circularArray = [0]
-  circularArray.push(circularArray)
-  const actual = uneval(circularArray)
-  const expected = `[
-  0,
-  Symbol.for('circular')
-]`
+  const value = []
+  value.push(value)
+  const actual = eval(uneval(value))
+  const expected = value
   assert({
     actual,
     expected,
