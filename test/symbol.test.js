@@ -23,7 +23,7 @@ symbol: Symbol()`,
 // global symbol
 {
   const value = Symbol.iterator
-  const actual = eval(uneval(expected))
+  const actual = eval(uneval(value))
   const expected = value
   assert({ actual, expected })
 }
@@ -31,7 +31,7 @@ symbol: Symbol()`,
 // Symbol.for()
 {
   const value = Symbol.for("whatever")
-  const actual = eval(uneval(expected))
+  const actual = eval(uneval(value))
   const expected = value
   assert({ actual, expected })
 }

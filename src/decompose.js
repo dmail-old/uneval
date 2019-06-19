@@ -190,7 +190,7 @@ export const decompose = (mainValue, { functionAllowed }) => {
     // otherwise prototype is unknown
     throw new Error(createUnknownPrototypeMessage({ prototypeValue }))
   }
-  const identifierForValueOf = (value, path) => {
+  const identifierForValueOf = (value, path = []) => {
     if (value instanceof Array) return valueToIdentifier(value.length, [...path, "length"])
 
     if ("valueOf" in value === false) return undefined
