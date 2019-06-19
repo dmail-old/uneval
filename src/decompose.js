@@ -38,86 +38,90 @@ export const decompose = (mainValue, { functionAllowed }) => {
       return identifier
     }
 
-    const propertiesDescription = {}
+    const propertyDescriptionArray = []
     Object.getOwnPropertyNames(value).forEach((propertyName) => {
       const propertyDescriptor = Object.getOwnPropertyDescriptor(value, propertyName)
-      const propertyDescription = {}
-      Object.keys(propertyDescriptor).forEach((descriptorName) => {
-        const descriptorValue = propertyDescriptor[descriptorName]
-
-        if (descriptorName === "set" && descriptorValue && !functionAllowed)
-          throw new Error(createForbiddenPropertySetterMessage({ path, propertyName }))
-        if (descriptorName === "get" && descriptorValue && !functionAllowed)
-          throw new Error(createForbiddenPropertyGetterMessage({ path, propertyName }))
-
-        const descriptorNameIdentifier = valueToIdentifier(descriptorName, [
-          ...path,
-          `["${propertyName}"]`,
-          `[[propertyDescriptor:${descriptorName}]]`,
-        ])
-        const descriptorValueIdentifier = valueToIdentifier(descriptorValue, [
-          ...path,
-          `["${propertyName}"]`,
-          `[[propertyDescriptor:${descriptorName}]]`,
-        ])
-        propertyDescription[descriptorNameIdentifier] = descriptorValueIdentifier
-      })
       const propertyNameIdentifier = valueToIdentifier(propertyName, [...path, propertyName])
-      propertiesDescription[propertyNameIdentifier] = propertyDescription
+      const propertyDescription = computePropertyDescription(propertyDescriptor, propertyName, path)
+      propertyDescriptionArray.push({ propertyNameIdentifier, propertyDescription })
     })
 
-    const symbolsDescription = {}
+    const symbolDescriptionArray = []
     Object.getOwnPropertySymbols(value).forEach((symbol) => {
       const propertyDescriptor = Object.getOwnPropertyDescriptor(value, symbol)
-      const propertyDescription = {}
-      Object.keys(propertyDescriptor).forEach((descriptorName) => {
-        const descriptorNameIdentifier = valueToIdentifier(descriptorName, [
-          ...path,
-          `[${symbol.toString()}]`,
-          `[[propertyDescriptor:${descriptorName}]]`,
-        ])
-        const descriptorValueIdentifier = valueToIdentifier(propertyDescriptor[descriptorName], [
-          ...path,
-          `[${symbol.toString()}]`,
-          `[[propertyDescriptor:${descriptorName}]]`,
-        ])
-        propertyDescription[descriptorNameIdentifier] = descriptorValueIdentifier
-      })
-      const symbolIdentifier = valueToIdentifier(symbol, [...path, symbol])
-      symbolsDescription[symbolIdentifier] = propertyDescription
+      const symbolIdentifier = valueToIdentifier(symbol, [...path, `[${symbol.toString()}]`])
+      const propertyDescription = computePropertyDescription(propertyDescriptor, symbol, path)
+      symbolDescriptionArray.push({ symbolIdentifier, propertyDescription })
     })
 
-    const methodsDescription = computeMethodsDescription(value, path)
+    const methodDescriptionArray = computeMethodDescriptionArray(value, path)
 
     const extensible = Object.isExtensible(value)
 
     recipeArray[identifier] = createCompositeRecipe({
-      propertiesDescription,
-      symbolsDescription,
-      methodsDescription,
+      propertyDescriptionArray,
+      symbolDescriptionArray,
+      methodDescriptionArray,
       extensible,
     })
     return identifier
   }
 
-  const computeMethodsDescription = (value, path) => {
-    const methodsDescription = {}
+  const computePropertyDescription = (propertyDescriptor, propertyNameOrSymbol, path) => {
+    if (propertyDescriptor.set && !functionAllowed)
+      throw new Error(createForbiddenPropertySetterMessage({ path, propertyNameOrSymbol }))
+    if (propertyDescriptor.get && !functionAllowed)
+      throw new Error(createForbiddenPropertyGetterMessage({ path, propertyNameOrSymbol }))
+
+    return {
+      configurable: propertyDescriptor.configurable,
+      writable: propertyDescriptor.writable,
+      enumerable: propertyDescriptor.enumerable,
+      getIdentifier:
+        "get" in propertyDescriptor
+          ? valueToIdentifier(propertyDescriptor.get, [
+              ...path,
+              String(propertyNameOrSymbol),
+              "[[descriptor:get]]",
+            ])
+          : undefined,
+      setIdentifier:
+        "set" in propertyDescriptor
+          ? valueToIdentifier(propertyDescriptor.set, [
+              ...path,
+              String(propertyNameOrSymbol),
+              "[[descriptor:set]]",
+            ])
+          : undefined,
+      valueIdentifier:
+        "value" in propertyDescriptor
+          ? valueToIdentifier(propertyDescriptor.value, [
+              ...path,
+              String(propertyNameOrSymbol),
+              "[[descriptor:value]]",
+            ])
+          : undefined,
+    }
+  }
+
+  const computeMethodDescriptionArray = (value, path) => {
+    const methodDescriptionArray = []
 
     if (typeof Set === "function" && value instanceof Set) {
-      const addCallArray = []
+      const callArray = []
       value.forEach((entryValue, index) => {
         const entryValueIdentifier = valueToIdentifier(entryValue, [
           ...path,
           `[[SetEntryValue]]`,
           index,
         ])
-        addCallArray.push([entryValueIdentifier])
+        callArray.push([entryValueIdentifier])
       })
-      methodsDescription[valueToIdentifier("add")] = addCallArray
+      methodDescriptionArray.push({ methodNameIdentifier: valueToIdentifier("add"), callArray })
     }
 
     if (typeof Map === "function" && value instanceof Map) {
-      const setCallArray = []
+      const callArray = []
       value.forEach((entryValue, entryKey) => {
         const entryKeyIdentifier = valueToIdentifier(entryKey, [
           ...path,
@@ -129,12 +133,12 @@ export const decompose = (mainValue, { functionAllowed }) => {
           "[[MapEntryValue]]",
           entryValue,
         ])
-        setCallArray.push([entryKeyIdentifier, entryValueIdentifier])
+        callArray.push([entryKeyIdentifier, entryValueIdentifier])
       })
-      methodsDescription[valueToIdentifier("set")] = setCallArray
+      methodDescriptionArray.push({ methodNameIdentifier: valueToIdentifier("set"), callArray })
     }
 
-    return methodsDescription
+    return methodDescriptionArray
   }
 
   const identifierForPrimitive = (value) => {
@@ -240,6 +244,7 @@ export const decompose = (mainValue, { functionAllowed }) => {
   return {
     recipeArray,
     mainIdentifier,
+    valueMap,
   }
 }
 
@@ -284,18 +289,18 @@ const createGlobalSymbolRecipe = (key) => {
 const createCompositeRecipe = ({
   prototypeIdentifier,
   valueOfIdentifier,
-  propertiesDescription,
-  symbolsDescription,
-  methodsDescription,
+  propertyDescriptionArray,
+  symbolDescriptionArray,
+  methodDescriptionArray,
   extensible,
 }) => {
   return {
     type: "composite",
     prototypeIdentifier,
     valueOfIdentifier,
-    propertiesDescription,
-    symbolsDescription,
-    methodsDescription,
+    propertyDescriptionArray,
+    symbolDescriptionArray,
+    methodDescriptionArray,
     extensible,
   }
 }
@@ -330,16 +335,16 @@ function found at: ${path.join("")}`
 
 const createForbiddenPropertyGetterMessage = ({
   path,
-  propertyName,
+  propertyNameOrSymbol,
 }) => `property getter are not allowed.
-getter found on property: ${propertyName}
+getter found on property: ${String(propertyNameOrSymbol)}
 at: ${path.join("")}`
 
 const createForbiddenPropertySetterMessage = ({
   path,
-  propertyName,
+  propertyNameOrSymbol,
 }) => `property setter are not allowed.
-setter found on property: ${propertyName}
+setter found on property: ${String(propertyNameOrSymbol)}
 at: ${path.join("")}`
 
 const createUnexpectedValueOfReturnValueMessage = () =>

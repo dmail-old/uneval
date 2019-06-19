@@ -70,3 +70,17 @@ import { uneval } from "../index.js"
   const expected = value
   assert({ actual, expected })
 }
+
+// order respected
+{
+  const value = {
+    name: {},
+    friends: {
+      id: 0,
+      name: "foo",
+    },
+  }
+  const actual = eval(uneval(value))
+  const expected = value
+  assert({ actual, expected })
+}

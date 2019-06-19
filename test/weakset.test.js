@@ -21,7 +21,7 @@ import { uneval } from "../index.js"
     throw new Error("should throw")
   } catch (actual) {
     const expected = new Error(`weakSet are not supported.
-weakSet found at: ["foo"][[propertyDescriptor:value]]`)
+weakSet found at: foo[[descriptor:value]]`)
     assert({ actual, expected })
   }
 }

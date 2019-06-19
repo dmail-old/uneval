@@ -21,7 +21,7 @@ import { uneval } from "../index.js"
     throw new Error("should throw")
   } catch (actual) {
     const expected = new Error(`promise are not supported.
-promise found at: ["foo"][[propertyDescriptor:value]]`)
+promise found at: foo[[descriptor:value]]`)
     assert({ actual, expected })
   }
 }

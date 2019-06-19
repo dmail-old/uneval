@@ -21,7 +21,7 @@ import { uneval } from "../index.js"
     throw new Error("should throw")
   } catch (actual) {
     const expected = new Error(`weakMap are not supported.
-weakMap found at: ["foo"][[propertyDescriptor:value]]`)
+weakMap found at: foo[[descriptor:value]]`)
     assert({ actual, expected })
   }
 }
