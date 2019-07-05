@@ -355,5 +355,6 @@ const createUnknownSymbolMessage = ({
 }) => `symbol must be global, like Symbol.iterator, or created using Symbol.for().
 symbol: ${symbol.toString()}`
 
-const createUnknownPrototypeMessage = () =>
-  `prototype must be global, like Object.prototype, or somewhere in the value.`
+const createUnknownPrototypeMessage = ({ prototypeValue }) =>
+  `prototype must be global, like Object.prototype, or somewhere in the value.
+prototype constructor name: ${prototypeValue.constructor.name}`

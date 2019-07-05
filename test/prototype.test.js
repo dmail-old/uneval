@@ -10,7 +10,8 @@ import { uneval } from "../index.js"
     throw new Error("should throw")
   } catch (actual) {
     const expected = new Error(
-      "prototype must be global, like Object.prototype, or somewhere in the value.",
+      `prototype must be global, like Object.prototype, or somewhere in the value.
+prototype constructor name: Object`,
     )
     assert({
       actual,
@@ -29,7 +30,8 @@ import { uneval } from "../index.js"
     uneval(value)
   } catch (actual) {
     const expected = new Error(
-      "prototype must be global, like Object.prototype, or somewhere in the value.",
+      `prototype must be global, like Object.prototype, or somewhere in the value.
+prototype constructor name: CustomConstructor`,
     )
     assert({
       actual,
