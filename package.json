@@ -13,39 +13,44 @@
 	"browser": "dist/global/main.js",
 	"main": "dist/commonjs/main.js",
 	"files": [
-		"/index.js",
+		"/dist/",
 		"/src/",
-		"/dist/"
+		"/index.js"
 	],
-	"dependencies": {},
-	"devDependencies": {
-		"@jsenv/core": "5.51.0",
-		"@jsenv/eslint-config": "8.0.0",
-		"@jsenv/eslint-import-resolver": "4.6.0",
-		"@jsenv/prettier-config": "1.0.0",
-		"@jsenv/prettier-check-project": "2.3.0",
-		"@jsenv/codecov-upload": "1.6.0",
-		"@jsenv/node-module-import-map": "1.5.0",
-		"@dmail/assert": "3.7.0",
-		"babel-eslint": "11.0.0-beta.0",
-		"prettier": "1.16.3",
-		"eslint": "5.1.0",
-		"eslint-plugin-import": "2.6.0",
-		"rimraf": "2.6.2"
-	},
 	"scripts": {
-		"generate-import-map": "node ./script/generate-import-map/generate-import-map.js",
-		"start-browsing-server": "node ./script/start-browsing-server/start-browsing-server.js",
+		"start-exploring-server": "node ./script/start-exploring-server/start-exploring-server.js",
 		"test": "node ./script/test/test.js",
-		"eslint-check-project": "eslint .",
-		"prettier-check-project": "node ./script/prettier-check-project/prettier-check-project.js",
+		"eslint-check": "eslint .",
+		"prettier-check": "node ./script/prettier-check/prettier-check.js",
 		"generate-coverage": "node ./script/generate-coverage/generate-coverage.js",
 		"upload-coverage": "node ./script/upload-coverage/upload-coverage.js",
-		"dist": "npm run clean && npm run generate-global-bundle && npm run generate-commonjs-bundle",
 		"generate-global-bundle": "node ./script/generate-global-bundle/generate-global-bundle.js",
 		"generate-commonjs-bundle": "node ./script/generate-commonjs-bundle/generate-commonjs-bundle.js",
+		"generate-import-map": "node ./script/generate-import-map/generate-import-map.js",
+		"dist": "npm run clean && npm run generate-global-bundle && npm run generate-commonjs-bundle",
 		"clean": "rimraf dist && rimraf coverage",
 		"reinstall": "npm run clean && rimraf node_modules && npm install",
-		"prepublishOnly": "npm run dist"
+		"postinstall": "npm run generate-import-map",
+		"prepublishOnly": "node ./script/transform-package/remove-postinstall.js && npm run dist",
+		"postpublish": "node ./script/transform-package/restore-postinstall.js"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"@jsenv/exploring-server": "2.14.0",
+		"@jsenv/execution": "1.1.0",
+		"@jsenv/bundling": "1.15.0",
+		"@jsenv/testing": "1.27.0",
+		"@jsenv/node-launcher": "1.17.0",
+		"@jsenv/chromium-launcher": "2.3.0",
+		"@jsenv/eslint-config": "9.8.0",
+		"@jsenv/prettier-config": "1.0.0",
+		"@jsenv/prettier-check-project": "3.2.0",
+		"@jsenv/codecov-upload": "1.7.0",
+		"@jsenv/node-module-import-map": "3.2.0",
+		"@dmail/assert": "3.14.0",
+		"babel-eslint": "11.0.0-beta.0",
+		"prettier": "1.18.2",
+		"eslint": "6.2.1",
+		"rimraf": "3.0.0"
 	}
 }

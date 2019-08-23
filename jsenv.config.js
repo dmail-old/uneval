@@ -1,4 +1,5 @@
-const { launchNode, launchChromium } = require("@jsenv/core")
+const { launchNode } = require("@jsenv/node-launcher")
+const { launchChromium } = require("@jsenv/chromium-launcher")
 
 const projectPath = __dirname
 exports.projectPath = projectPath

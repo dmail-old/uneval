@@ -1,7 +1,8 @@
-/node_modules
-/package-lock.json
-/.dist
-/dist
-/coverage
-/importMap.json
+/.dist/
+/coverage/
+/dist/
+/node_modules/
 /env.json
+/importMap.json
+/jsconfig.json
+/package-lock.json
