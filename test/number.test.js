@@ -1,3 +1,4 @@
+/* eslint-disable no-eval */
 import { assert } from "@dmail/assert"
 import { uneval } from "../index.js"
 
