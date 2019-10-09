@@ -14,7 +14,7 @@ It exists to overcome `JSON.stringify` limitations.<br />
 But you should better use `JSON.stringify` and avoid using `uneval` at all.<br />
 However, if some `JSON.stringify` limitations is a problem for you `uneval` might be what you're looking for.<br />
 
-## `JSON.stringify` limitations
+## 1) `JSON.stringify` limitations
 
 - Transforms regexp into `{}`
 
