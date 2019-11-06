@@ -6,7 +6,7 @@
 import { isComposite } from "./is-composite.js"
 import { getCompositeGlobalPath, getPrimitiveGlobalPath } from "./global-value-path.js"
 
-export const decompose = (mainValue, { functionAllowed }) => {
+export const decompose = (mainValue, { functionAllowed, prototypeStrict }) => {
   const valueMap = {}
   const recipeArray = []
 
@@ -192,7 +192,11 @@ export const decompose = (mainValue, { functionAllowed }) => {
     }
 
     // otherwise prototype is unknown
-    throw new Error(createUnknownPrototypeMessage({ prototypeValue }))
+    if (prototypeStrict) {
+      throw new Error(createUnknownPrototypeMessage({ prototypeValue }))
+    }
+
+    return prototypeValueToIdentifier(Object.getPrototypeOf(prototypeValue), true)
   }
   const identifierForValueOf = (value, path = []) => {
     if (value instanceof Array) return valueToIdentifier(value.length, [...path, "length"])
@@ -237,7 +241,7 @@ export const decompose = (mainValue, { functionAllowed }) => {
       // valueOf, mandatory to uneval new Date(10) for instance.
       recipe.valueOfIdentifier = identifierForValueOf(value)
       const prototypeValue = Object.getPrototypeOf(value)
-      recipe.prototypeIdentifier = prototypeValueToIdentifier(prototypeValue)
+      recipe.prototypeIdentifier = prototypeValueToIdentifier(prototypeValue, true)
     }
   })
 
